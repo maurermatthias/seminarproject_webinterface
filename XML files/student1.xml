@@ -1,0 +1,37 @@
+<loginxml>
+  <usergroup>1</usergroup>
+  <registeredclasses>
+    <class>
+      <visibility>ALL</visibility>
+      <name>class1</name>
+      <description>desc. class1</description>
+      <id>1</id>
+    </class>
+    <class>
+      <visibility>NOTALL</visibility>
+      <name>class2</name>
+      <description>desc. class2</description>
+      <id>2</id>
+    </class>
+  </registeredclasses>
+  <availableclasses>
+    <class>
+      <visibility>ALL</visibility>
+      <name>class1</name>
+      <description>desc. class1</description>
+      <id>1</id>
+    </class>
+    <class>
+      <visibility>NOTALL</visibility>
+      <name>class2</name>
+      <description>desc. class2</description>
+      <id>2</id>
+    </class>
+    <class>
+      <visibility>ALL</visibility>
+      <name>class3</name>
+      <description>desc. class3</description>
+      <id>3</id>
+    </class>
+  </availableclasses>
+</loginxml>

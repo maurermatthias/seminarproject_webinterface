@@ -1,0 +1,101 @@
+<loginxml>
+  <usergroup>2</usergroup>
+  <createdclasses>
+    <class>
+      <visibility>ALL</visibility>
+      <name>class1</name>
+      <description>desc. class1</description>
+      <id>1</id>
+    </class>
+    <class>
+      <visibility>NOTALL</visibility>
+      <name>class2</name>
+      <description>desc. class2</description>
+      <id>2</id>
+    </class>
+  </createdclasses>
+  <createdstudents>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student1</name>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student2</name>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student3</name>
+    </user>
+  </createdstudents>
+  <createdcompetences>
+    <competence>
+      <name>C1</name>
+      <describtion>desc. C1</describtion>
+    </competence>
+    <competence>
+      <name>C2</name>
+      <describtion>desc. C2</describtion>
+    </competence>
+    <competence>
+      <name>C3</name>
+      <describtion>desc. C3</describtion>
+    </competence>
+    <competence>
+      <name>C4</name>
+      <describtion>desc. C4</describtion>
+    </competence>
+    <competence>
+      <name>C5</name>
+      <describtion>desc. C5</describtion>
+    </competence>
+    <competence>
+      <name>C6</name>
+      <describtion>desc. C6</describtion>
+    </competence>
+  </createdcompetences>
+  <createdcstructures>
+    <competencestructure>
+      <name>4</name>
+      <description>desc. CS1</description>
+    </competencestructure>
+  </createdcstructures>
+  <createdtasks>
+    <task>
+      <name>task1</name>
+      <description>desc1</description>
+      <text>frage1</text>
+      <answer>antw1</answer>
+    </task>
+    <task>
+      <name>task2</name>
+      <description>desc2</description>
+      <text>frage2</text>
+      <answer>antw2</answer>
+    </task>
+    <task>
+      <name>task3</name>
+      <description>desc3</description>
+      <text>frage3</text>
+      <answer>antw3</answer>
+    </task>
+    <task>
+      <name>task4</name>
+      <description>desc4</description>
+      <text>frage4</text>
+      <answer>antw4</answer>
+    </task>
+    <task>
+      <name>task5</name>
+      <description>desc5</description>
+      <text>frage5</text>
+      <answer>antw5</answer>
+    </task>
+  </createdtasks>
+  <visiblecompetences>
+  </visiblecompetences>
+  <visiblecstructures>
+  </visiblecstructures>
+  <visibletasks>
+  </visibletasks>
+</loginxml>

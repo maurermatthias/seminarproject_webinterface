@@ -1,0 +1,145 @@
+<loginxml>
+  <usergroup>3</usergroup>
+  <administrators>
+    <user>
+      <usergroup>3</usergroup>
+      <name>admin</name>
+    </user>
+  </administrators>
+  <teachers>
+    <user>
+      <usergroup>2</usergroup>
+      <name>teacher</name>
+      <createdclasses>
+      </createdclasses>
+    </user>
+    <user>
+      <usergroup>2</usergroup>
+      <name>teacher1</name>
+      <createdclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class1</name>
+          <description>desc. class1</description>
+          <id>1</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class2</name>
+          <description>desc. class2</description>
+          <id>2</id>
+        </class>
+      </createdclasses>
+    </user>
+    <user>
+      <usergroup>2</usergroup>
+      <name>teacher2</name>
+      <createdclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class3</name>
+          <description>desc. class3</description>
+          <id>3</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class4</name>
+          <description>desc. class4</description>
+          <id>4</id>
+        </class>
+      </createdclasses>
+    </user>
+  </teachers>
+  <students>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student</name>
+      <registeredclasses>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student1</name>
+      <registeredclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class1</name>
+          <description>desc. class1</description>
+          <id>1</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class2</name>
+          <description>desc. class2</description>
+          <id>2</id>
+        </class>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student2</name>
+      <registeredclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class1</name>
+          <description>desc. class1</description>
+          <id>1</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class2</name>
+          <description>desc. class2</description>
+          <id>2</id>
+        </class>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student3</name>
+      <registeredclasses>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student4</name>
+      <registeredclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class3</name>
+          <description>desc. class3</description>
+          <id>3</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class4</name>
+          <description>desc. class4</description>
+          <id>4</id>
+        </class>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student5</name>
+      <registeredclasses>
+        <class>
+          <visibility>ALL</visibility>
+          <name>class3</name>
+          <description>desc. class3</description>
+          <id>3</id>
+        </class>
+        <class>
+          <visibility>NOTALL</visibility>
+          <name>class4</name>
+          <description>desc. class4</description>
+          <id>4</id>
+        </class>
+      </registeredclasses>
+    </user>
+    <user>
+      <usergroup>1</usergroup>
+      <name>student6</name>
+      <registeredclasses>
+      </registeredclasses>
+    </user>
+  </students>
+</loginxml>
