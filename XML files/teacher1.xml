@@ -31,27 +31,27 @@
   <createdcompetences>
     <competence>
       <name>C1</name>
-      <describtion>desc. C1</describtion>
+      <description>desc. C1</description>
     </competence>
     <competence>
       <name>C2</name>
-      <describtion>desc. C2</describtion>
+      <description>desc. C2</description>
     </competence>
     <competence>
       <name>C3</name>
-      <describtion>desc. C3</describtion>
+      <description>desc. C3</description>
     </competence>
     <competence>
       <name>C4</name>
-      <describtion>desc. C4</describtion>
+      <description>desc. C4</description>
     </competence>
     <competence>
       <name>C5</name>
-      <describtion>desc. C5</describtion>
+      <description>desc. C5</description>
     </competence>
     <competence>
       <name>C6</name>
-      <describtion>desc. C6</describtion>
+      <description>desc. C6</description>
     </competence>
   </createdcompetences>
   <createdcstructures>

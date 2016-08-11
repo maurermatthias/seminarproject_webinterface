@@ -1,42 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>FANCY NAME</title>
+<link rel="stylesheet" type="text/css" href="style.css">
 <script src="JS/webRequests.js"></script>
 <script src="JS/readLocalFile.js"></script>
-<!--
-<script src="JS/jquery-2.2.2.min.js"></script>
-<script src="JS/SessionInformation.js"></script>
-<script src="JS/teacher.js"></script>
-<script src="JS/listener.js"></script>
+<script src="JS/pageCreator.js"></script>
+<script src="JS/sessionInformation.js"></script>
+<script src="JS/user.js"></script>
 <script>
-sessionInformation = new SessionInformation();
-teacher = new Teacher();
+    var sessionInformation = new SessionInformation();
 </script>
-<link rel="stylesheet" href="JS/style.css">
--->
 </head>
 <body>
-<!--
-<div id="menudiv">
-	<table id="menuTable">
-		<tr  class="munutr">
-		<td class="munutd" id="menu1-1" style="background-color:green; width:15%"></td>
-		<td rowspan="2" class="munutd" id="menu1-2" style="background-color:red; width:70%"></td>
-		<td class="munutd" id="menu1-3" style="background-color:blue; width:15%"></td>
-		</tr>
-		<tr  class="munutr">
-		<td class="munutd" id="menu2-1" style="background-color:white"></td>
-		<td class="munutd" id="menu2-3" style="background-color:silver"></td>
-		</tr>
-	</table>
-</div>
-<div id="bodydiv"></div>
-
--->
+    <div id="divMenu"></div>
+    <div id="divContent"></div>
 <script>
-readTextFile("teacher1");
+    loadPage(sessionInformation);
 </script>
 </body>
 </html>

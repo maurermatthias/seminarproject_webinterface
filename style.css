@@ -1,0 +1,119 @@
+/*GENERAL*/
+
+body{
+    /*background-color:green;*/
+    margin:0px;
+    padding:0px;
+}
+#divMenu{
+    position:fixed;
+    background-color: lightgrey;
+    height: 15%;
+    width:100%;
+    margin:0px;
+    padding:0px;
+}
+#divContent{
+    position:fixed;
+    background-color:lightgoldenrodyellow;
+    height: 85%;
+    top: 15%;
+    width: 100%;
+}
+.center{
+    text-align: center;
+}
+.right{
+    text-align: right;
+}
+.hover{
+    cursor: pointer;
+}
+.button{
+    cursor:pointer;
+}
+.stretchButton{
+    cursor:pointer;
+    width:100%;
+}
+.fullTable{
+    width:100%;
+    height:100%;
+}
+.fullTr{
+    height:100%;
+}
+/*LOGIN*/
+
+#divLogin{
+    background-color: lightgrey;
+    display: inline-block;
+    text-align: left;
+}
+#divLoginParent{
+    width:100%;
+    height:100%;
+    display:table;
+}
+#divLoginChild{
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/*ADMIN*/
+
+#divAdminLeft{
+    background-color:lightgreen;
+    height:100%;
+}
+#divAdminRight{
+    background-color:lightblue;
+    height:100%;
+}
+#colAdminLeft{
+    width:30%;
+}
+#colAdminRight{
+    width:70%;
+}
+#trAdminLeft{
+    height:10%;;
+}
+
+.scroll {
+  border: 0;
+  border-collapse: collapse;
+}
+
+.scroll tr {
+  display: flex;
+}
+
+.scroll td {
+  padding: 3px;
+  flex: 1 auto;
+  border: 1px solid #aaa;
+  width: 1px;
+  word-wrap: break-word;
+}
+
+.scroll thead tr:after {
+  content: '';
+  overflow-y: scroll;
+  visibility: hidden;
+  height: 0;
+}
+
+.scroll thead th {
+  flex: 1 auto;
+  display: block;
+  border: 1px solid #000;
+}
+
+.scroll tbody {
+  display: block;
+  width: 100%;
+  overflow-y: auto;
+  height:200px;
+}
