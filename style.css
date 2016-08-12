@@ -43,6 +43,42 @@ body{
 .fullTr{
     height:100%;
 }
+.divChosen{
+    background-color:black;
+    color:white;
+}
+.scroll {
+  border: 0;
+  border-collapse: collapse;
+}
+.scroll tr {
+  display: flex;
+}
+.scroll td {
+  padding: 3px;
+  flex: 1 auto;
+  border: 1px solid #000;
+  width: 1px;
+  word-wrap: break-word;
+}
+.scroll thead tr:after {
+  content: '';
+  overflow-y: scroll;
+  visibility: hidden;
+  height: 0;
+}
+.scroll thead th {
+  flex: 1 auto;
+  display: block;
+  border: 1px solid #000;
+}
+.scroll tbody {
+  display: block;
+  width: 100%;
+  overflow-y: auto;
+  height:200px;
+  border: 1px solid #000;
+}
 /*LOGIN*/
 
 #divLogin{
@@ -64,12 +100,12 @@ body{
 /*ADMIN*/
 
 #divAdminLeft{
-    background-color:lightgreen;
     height:100%;
+    margin:10px;
 }
 #divAdminRight{
-    background-color:lightblue;
     height:100%;
+    margin:10px;
 }
 #colAdminLeft{
     width:30%;
@@ -80,40 +116,6 @@ body{
 #trAdminLeft{
     height:10%;;
 }
-
-.scroll {
-  border: 0;
-  border-collapse: collapse;
-}
-
-.scroll tr {
-  display: flex;
-}
-
-.scroll td {
-  padding: 3px;
-  flex: 1 auto;
-  border: 1px solid #aaa;
-  width: 1px;
-  word-wrap: break-word;
-}
-
-.scroll thead tr:after {
-  content: '';
-  overflow-y: scroll;
-  visibility: hidden;
-  height: 0;
-}
-
-.scroll thead th {
-  flex: 1 auto;
-  display: block;
-  border: 1px solid #000;
-}
-
-.scroll tbody {
-  display: block;
-  width: 100%;
-  overflow-y: auto;
-  height:200px;
+#divAdminEntity{
+    background-color:lightblue;
 }
