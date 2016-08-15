@@ -208,7 +208,7 @@ function Administrator(parser) {
     };
 }
 
-function task() {
+function task(parser) {
     this.name;
     this.description;
     this.text;
@@ -230,7 +230,7 @@ function task() {
     };
 }
 
-function cstructure() {
+function cstructure(parser) {
     this.name;
     this.description;
     this.fillCstructure = function (parser) {
@@ -246,7 +246,7 @@ function cstructure() {
     };
 }
 
-function competence() {
+function competence(parser) {
     this.name;
     this.description;
     this.fillCompetence = function (parser) {

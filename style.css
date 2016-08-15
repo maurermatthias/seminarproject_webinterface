@@ -79,6 +79,17 @@ body{
   height:200px;
   border: 1px solid #000;
 }
+#buttonLogout{
+    position:absolute;
+    left: 90%;
+    top: 0;
+    background-color:red;
+    width:10%;
+    height:20px;
+    color:white;
+    text-align:center;
+}
+
 /*LOGIN*/
 
 #divLogin{
@@ -114,8 +125,51 @@ body{
     width:70%;
 }
 #trAdminLeft{
-    height:10%;;
+    height:10%;
 }
 #divAdminEntity{
     background-color:lightblue;
+}
+
+/*STUDENT*/
+
+#divStudentLeft{
+    height:100%;
+    margin:10px;
+}
+#divStudentRight{
+    height:100%;
+    margin:10px;
+}
+#colStudentLeft{
+    width:30%;
+}
+#colStudentRight{
+    width:70%;
+}
+
+
+/*UNKNOWN*/
+
+#divUnknownError{
+    background-color:red;
+    color:white;
+    text-align:center;
+}
+
+/*TEACHER*/
+
+#divTeacherLeft{
+    height:100%;
+    margin:10px;
+}
+#divTeacherRight{
+    height:100%;
+    margin:10px;
+}
+#colTeacherLeft{
+    width:30%;
+}
+#colTeacherRight{
+    width:70%;
 }

@@ -39,7 +39,7 @@ function loadLoginPageContent(id,session) {
     html += "</tr><tr>";
     html += "<td colspan='2'><button class='stretchButton' id='buttonLogin'>Login</button></td>";
     html += "</tr></table>";
-    html += "</div></div></div>";
+    html += "<div id='divUnknownError'></div></div></div></div>";
     document.getElementById(id).innerHTML = html;
 
     document.getElementById('buttonLogin').onclick = function () {
@@ -55,38 +55,282 @@ function loadLoginPageMenu(id, session) {
 
 //UNKNOWN
 
-function loadStartPageContentUnknown(id,session) {
-    var html = "...";
-    document.getElementById(id).innerHTML = html;
+function loadStartPageContentUnknown(id, session) {
+    loadLoginPageContent(id, session);
+
+    //var html = "<div id='divUnknownError'>";
+    var html = "Login Failed!";
+    //html += "</div>";
+
+    document.getElementById('divUnknownError').innerHTML = html;
+
+    setTimeout(function () { document.getElementById('divUnknownError').innerHTML = ""; }, 3000);
 }
 
 function loadStartPageMenuUnknown(id, session) {
-    var html = "unknown";
+    var html = "";
     document.getElementById(id).innerHTML = html;
 }
 
 //STUDENT
 
 function loadStartPageContentStudent(id, session) {
-    var html = "...";
+    var html = "<table class='fullTable'><colgroup><col span='1' id='colStudentLeft'><col span='1' id='colStudentRight'></colgroup>";
+    html += "<tr class='fullTr'><td id='tdStudentLeft'><div id='divStudentLeft'>";
+    html += "left";
+    html += "</div></td><td id='tdStudentRight'><div id='divStudentRight'>";
+    html += "right";
+    html += "</div></td></tr></table>";
     document.getElementById(id).innerHTML = html;
+
+    loadScrollingClasses("divStudentLeft", session);
+}
+
+function loadScrollingClasses(id, session) {
+    var html = "<table id='tableStudentClass' class='scroll'  width='100%'>";
+    html += "  <thead><tr><th id='thStudentClassRegistered' class='hover thStudentClass'>Registered</th>";
+    html += "<th id='thStudentClassAvailable' class='hover divChosen thStudentClass'>Available</th></tr></thead>";
+    var classes = session.user.user.availableclasses;
+    for (var i = 0; i < classes.length; i++) {
+        html += "  <tr><td colspan='2' id='tdStudentClass" + i + "' class='tdStudentClass hover'>" + classes[i].name + "</td></tr>"
+    }
+    html += "</table>";
+    document.getElementById(id).innerHTML = html;
+    setStudentClassClickListener(session);
+
+    var elements = document.getElementsByClassName("thStudentClass");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            var elements = document.getElementsByClassName("thStudentClass");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+            if (!(this.id == chosenId)) {
+                //unselect old selected item
+                var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
+                var newClassArray = document.getElementById(chosenId).className.split(" ");
+                newClassArray.splice(pos, 1);
+                document.getElementById(chosenId).className = newClassArray.join(" ");
+                //select new item
+                this.className = this.className + " divChosen";
+                loadStudentClassInfo(null, session);
+            }
+            //delete all rows
+            var table = document.getElementById('tableStudentClass');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            //add new lines
+            var newLines = "";
+            var classes;
+            switch (this.id) {
+                case "thStudentClassRegistered":
+                    classes = session.user.user.registeredclasses;
+                    break;
+                case "thStudentClassAvailable":
+                    classes = session.user.user.availableclasses;
+                    break;
+            }
+            for (var i = 0; i < classes.length; i++) {
+                newLines += "  <tr><td colspan='2' id='tdStudentClass" + i + "' class='tdStudentClass hover'>" + classes[i].name + "</td></tr>"
+            }
+            table.tBodies[0].innerHTML += newLines;
+            setStudentClassClickListener(session);
+        }
+    }
+
+}
+
+function setStudentClassClickListener(session) {
+    var elements = document.getElementsByClassName("tdStudentClass");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            var elements = document.getElementsByClassName("tdStudentClass");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+            if (!(this.id == chosenId)) {
+                //unselect old selected item
+                if (chosenId != -1) {
+                    var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
+                    var newClassArray = document.getElementById(chosenId).className.split(" ");
+                    newClassArray.splice(pos, 1);
+                    document.getElementById(chosenId).className = newClassArray.join(" ");
+                }
+                //select new item
+                this.className = this.className + " divChosen";
+                loadStudentClassInfo(this.innerHTML, session);
+            }
+        }
+    }
+
 }
 
 function loadStartPageMenuStudent(id, session) {
-    var html = "student";
+    var html = "<div id='buttonLogout' class='hover'>Logout</div>";
     document.getElementById(id).innerHTML = html;
+
+    document.getElementById('buttonLogout').onclick = function () {
+        sessionInformation.logout();
+    }
 }
+
+function loadStudentClassInfo(classname, session) {
+    if (classname == null) {
+        document.getElementById('divStudentRight').innerHTML = "right";
+        return;
+    }
+    //get class by name
+    var clazz = null;
+    var registeredForClass = false;
+    for (var i = 0; i < session.user.user.registeredclasses.length; i++) {
+        if (session.user.user.registeredclasses[i].name == classname) {
+            clazz = session.user.user.registeredclasses[i];
+            registeredForClass = true;
+            break;
+        }
+    }
+    if (clazz == null) {
+        for (var i = 0; i < session.user.user.availableclasses.length; i++) {
+            if (session.user.user.availableclasses[i].name == classname) {
+                clazz = session.user.user.availableclasses[i];
+                break;
+            }
+        }
+    }
+
+    var html = "<div id='divStudentClass'>";
+    html += "NAME: " + clazz.name + "</br>";
+    if (registeredForClass) {
+        html += "ALREADY REGISTERED";
+    } else {
+        html += "NOT REGISTERED";
+    }
+    html += "<div>";
+    document.getElementById('divStudentRight').innerHTML = html;
+}
+
 
 //TEACHER
 
 function loadStartPageContentTeacher(id, session) {
-    var html = "...";
+    var html = "<table class='fullTable'><colgroup><col span='1' id='colTeacherLeft'><col span='1' id='colTeacherRight'></colgroup>";
+    html += "<tr class='fullTr'><td id='tdTeacherLeft'><div id='divTeacherLeft'>";
+    html += "left";
+    html += "</div></td><td id='tdTeacherRight'><div id='divTeacherRight'>";
+    html += "right";
+    html += "</div></td></tr></table>";
     document.getElementById(id).innerHTML = html;
+
+    loadScrollingForTeacher("divTeacherLeft", session);
+}
+
+function loadScrollingForTeacher(id, session) {
+    var html = "<table id='tableTeacherClass' class='scroll'  width='100%'>";
+    html += "  <thead><tr><th id='thTeacherCreatedClasses' class='hover thTeacherScroll'>Created Classes</th>";
+    html += "<th id='thTeacherCreatedStudents' class='hover divChosen thTeacherScroll'>Created Students</th></tr>";
+    html += "<tr><th id='thTeacherCreatedCompetences' class='hover thTeacherScroll'>Created Competences</th>";
+    html += "<th id='thTeacherCreatedCstructures' class='hover thTeacherScroll'>Created C.-Structures</th></tr>";
+    html += "<tr><th id='thTeacherCreatedTasks' class='hover thTeacherScroll'>Created Tasks</th>";
+    html += "<th id='thTeacherVisibleCompetences' class='hover thTeacherScroll'>Visible Competences</th></tr>";
+    html += "<tr><th id='thTeacherVisibleCstructures' class='hover thTeacherScroll'>Visible C.-Structures</th>";
+    html += "<th id='thTeacherVisibleTasks' class='hover thTeacherScroll'>Visible Tasks</th></tr>";
+    html += "</thead>";
+    var entities = session.user.user.createdstudents;
+    for (var i = 0; i < entities.length; i++) {
+        html += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='thTeacherScroll hover'>" + entities[i].name + "</td></tr>"
+    }
+    html += "</table>";
+    document.getElementById(id).innerHTML = html;
+    //setStudentClassClickListener(session);
+
+    var elements = document.getElementsByClassName("thTeacherScroll");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            var elements = document.getElementsByClassName("thTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+            if (!(this.id == chosenId)) {
+                //unselect old selected item
+                var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
+                var newClassArray = document.getElementById(chosenId).className.split(" ");
+                newClassArray.splice(pos, 1);
+                document.getElementById(chosenId).className = newClassArray.join(" ");
+                //select new item
+                this.className = this.className + " divChosen";
+                //loadStudentClassInfo(null, session);
+            }
+            //delete all rows
+            var table = document.getElementById('tableTeacherClass');
+            while (table.rows.length > 4) {
+                table.deleteRow(4);
+            }
+            //add new lines
+            var newLines = "";
+            var entities;
+            switch (this.id) {
+                case "thTeacherCreatedClasses":
+                    entities = session.user.user.createdclasses;
+                    break;
+                case "thTeacherCreatedStudents":
+                    entities = session.user.user.createdstudents;
+                    break;
+                case "thTeacherCreatedCompetences":
+                    entities = session.user.user.createdcompetences;
+                    break;
+                case "thTeacherCreatedCstructures":
+                    entities = session.user.user.createdcstructures;
+                    break;
+                case "thTeacherCreatedTasks":
+                    entities = session.user.user.createdtasks;
+                    break;
+                case "thTeacherVisibleCompetences":
+                    entities = session.user.user.visiblecompetences;
+                    break;
+                case "thTeacherVisibleCstructures":
+                    entities = session.user.user.visiblecstructures;
+                    break;
+                case "thTeacherVisibleTasks":
+                    entities = session.user.user.visibletasks;
+                    break;
+            }
+            for (var i = 0; i < entities.length; i++) {
+                newLines += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='thTeacherScroll hover'>" + entities[i].name + "</td></tr>"
+            }
+            table.tBodies[0].innerHTML += newLines;
+            //setStudentClassClickListener(session);
+            
+        }
+    }
+
 }
 
 function loadStartPageMenuTeacher(id, session) {
-    var html = "teacher";
+    var html = "<div id='buttonLogout' class='hover'>Logout</div>";
     document.getElementById(id).innerHTML = html;
+
+    document.getElementById('buttonLogout').onclick = function () {
+        sessionInformation.logout();
+    }
 }
 
 //ADMIN
@@ -252,8 +496,12 @@ function loadAdminEntityInfo(username, session) {
 }
 
 function loadStartPageMenuAdministrator(id, session) {
-    var html = "administrator";
+    var html = "<div id='buttonLogout' class='hover'>Logout</div>";
     document.getElementById(id).innerHTML = html;
+
+    document.getElementById('buttonLogout').onclick = function () {
+        sessionInformation.logout();
+    }
 }
 
 

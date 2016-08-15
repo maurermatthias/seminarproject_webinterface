@@ -1,8 +1,8 @@
 function SessionInformation(){
-    this.username;
-    this.password;
-    this.user;
-    this.userloggedin;
+    this.username=null;
+    this.password=null;
+    this.user=null;
+    this.userloggedin=false;
     this.login = function (username, password) {
         this.username = username;
         this.password = password;
@@ -14,10 +14,13 @@ function SessionInformation(){
         loadPage(this);
     };
     this.logout = function () {
+        location.reload();
+        /*
         this.username = null;
         this.password = null;
         this.user = null;
         this.userloggedin = false;
         loadPage(this);
+        */
     }
 }
