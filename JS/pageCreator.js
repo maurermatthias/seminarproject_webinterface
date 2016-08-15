@@ -242,19 +242,19 @@ function loadScrollingForTeacher(id, session) {
     html += "  <thead><tr><th id='thTeacherCreatedClasses' class='hover thTeacherScroll'>Created Classes</th>";
     html += "<th id='thTeacherCreatedStudents' class='hover divChosen thTeacherScroll'>Created Students</th></tr>";
     html += "<tr><th id='thTeacherCreatedCompetences' class='hover thTeacherScroll'>Created Competences</th>";
-    html += "<th id='thTeacherCreatedCstructures' class='hover thTeacherScroll'>Created C.-Structures</th></tr>";
-    html += "<tr><th id='thTeacherCreatedTasks' class='hover thTeacherScroll'>Created Tasks</th>";
     html += "<th id='thTeacherVisibleCompetences' class='hover thTeacherScroll'>Visible Competences</th></tr>";
-    html += "<tr><th id='thTeacherVisibleCstructures' class='hover thTeacherScroll'>Visible C.-Structures</th>";
+    html += "<tr><th id='thTeacherCreatedCstructures' class='hover thTeacherScroll'>Created C.-Structures</th>";
+    html += "<th id='thTeacherVisibleCstructures' class='hover thTeacherScroll'>Visible C.-Structures</th></tr>";
+    html += "<tr><th id='thTeacherCreatedTasks' class='hover thTeacherScroll'>Created Tasks</th>";
     html += "<th id='thTeacherVisibleTasks' class='hover thTeacherScroll'>Visible Tasks</th></tr>";
     html += "</thead>";
     var entities = session.user.user.createdstudents;
     for (var i = 0; i < entities.length; i++) {
-        html += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='thTeacherScroll hover'>" + entities[i].name + "</td></tr>"
+        html += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='tdTeacherCreatedStudents tdTeacherScroll hover'>" + entities[i].name + "</td></tr>"
     }
     html += "</table>";
     document.getElementById(id).innerHTML = html;
-    //setStudentClassClickListener(session);
+    setTeacherEntityClickListener(session);
 
     var elements = document.getElementsByClassName("thTeacherScroll");
     for (var i = 0; i < elements.length; i++) {
@@ -287,41 +287,123 @@ function loadScrollingForTeacher(id, session) {
             //add new lines
             var newLines = "";
             var entities;
+            var className;
             switch (this.id) {
                 case "thTeacherCreatedClasses":
                     entities = session.user.user.createdclasses;
+                    className='tdTeacherCreatedClasses';
                     break;
                 case "thTeacherCreatedStudents":
                     entities = session.user.user.createdstudents;
+                    className='tdTeacherCreatedStudents';
                     break;
                 case "thTeacherCreatedCompetences":
                     entities = session.user.user.createdcompetences;
+                    className='tdTeacherCreatedCompetences';
                     break;
                 case "thTeacherCreatedCstructures":
                     entities = session.user.user.createdcstructures;
+                    className='tdTeacherCreatedCstructures';
                     break;
                 case "thTeacherCreatedTasks":
                     entities = session.user.user.createdtasks;
+                    className='tdTeacherCreatedTasks';
                     break;
                 case "thTeacherVisibleCompetences":
                     entities = session.user.user.visiblecompetences;
+                    className='tdTeacherVisibleCompetences';
                     break;
                 case "thTeacherVisibleCstructures":
                     entities = session.user.user.visiblecstructures;
+                    className='tdTeacherVisibleCstructures';
                     break;
                 case "thTeacherVisibleTasks":
                     entities = session.user.user.visibletasks;
+                    className='tdTeacherVisibleTasks';
                     break;
             }
             for (var i = 0; i < entities.length; i++) {
-                newLines += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='thTeacherScroll hover'>" + entities[i].name + "</td></tr>"
+                newLines += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='"+className+" tdTeacherScroll hover'>" + entities[i].name + "</td></tr>"
             }
             table.tBodies[0].innerHTML += newLines;
-            //setStudentClassClickListener(session);
+            setTeacherEntityClickListener(session);
             
         }
     }
 
+}
+
+function setTeacherEntityClickListener(session) {
+    var elements = document.getElementsByClassName("tdTeacherScroll");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            var elements = document.getElementsByClassName("tdTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+            if (!(this.id == chosenId)) {
+                //unselect old selected item
+                if (chosenId != -1) {
+                    var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
+                    var newClassArray = document.getElementById(chosenId).className.split(" ");
+                    newClassArray.splice(pos, 1);
+                    document.getElementById(chosenId).className = newClassArray.join(" ");
+                }
+                //select new item
+                this.className = this.className + " divChosen";
+                loadTeacherEntityInfo(this.innerHTML, session);
+            }
+        }
+    }
+}
+
+function loadTeacherEntityInfo(name, session) {
+    var html = "";
+
+    var elements = document.getElementsByClassName("thTeacherScroll");
+    var chosenId = -1;
+    //find selected item
+    for (var i = 0; i < elements.length; i++) {
+        var classes = elements[i].className.split(" ");
+        if (classes.indexOf("divChosen") > -1) {
+            chosenId = elements[i].id;
+            break;
+        }
+    }
+    switch (chosenId) {
+        case "thTeacherCreatedClasses":
+            html += "Created Class: " + name;
+            break;
+        case "thTeacherCreatedStudents":
+            html += "Created Student: " + name;
+            break;
+        case "thTeacherCreatedCompetences":
+            html += "Created Competence: " + name;
+            break;
+        case "thTeacherCreatedCstructures":
+            html += "Created C.-Structure: " + name;
+            break;
+        case "thTeacherCreatedTasks":
+            html += "Created Task: " + name;
+            break;
+        case "thTeacherVisibleCompetences":
+            html += "Visible Competence: " + name;
+            break;
+        case "thTeacherVisibleCstructures":
+            html += "Visible C.-Structure: " + name;
+            break;
+        case "thTeacherVisibleTasks":
+            html += "Visible Task: " + name;
+            break;
+    }
+
+    document.getElementById('divTeacherRight').innerHTML = html;
 }
 
 function loadStartPageMenuTeacher(id, session) {
@@ -503,28 +585,3 @@ function loadStartPageMenuAdministrator(id, session) {
         sessionInformation.logout();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

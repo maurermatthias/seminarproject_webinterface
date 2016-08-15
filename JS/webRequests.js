@@ -38,7 +38,7 @@
 
   function doLogin(username, password) {
       var url = "" + "?name=" + username + "&password=" + password;
-      readTextFile("teacher1", sessionInformation.setUser);
+      readTextFile("student", sessionInformation.setUser);
       // send xml string
       /*
       var xmlhttp = new XMLHttpRequest();
