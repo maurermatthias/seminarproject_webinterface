@@ -5,7 +5,7 @@ function loadPage(session) {
         loadLoginPageMenu(idMenu, session);
         loadLoginPageContent(idContent, session);
         //tmp: login
-        sessionInformation.login("a", "s");
+        sessionInformation.login("teacher1", "teacher1");
     }
     else {
         if (session.user.usergroup == 0) {
@@ -239,7 +239,7 @@ function loadStartPageContentTeacher(id, session) {
 
 function loadScrollingForTeacher(id, session) {
     var html = "<table id='tableTeacherClass' class='scroll'  width='100%'>";
-    html += "  <thead><tr><th id='thTeacherCreatedClasses' class='hover thTeacherScroll'>Created Classes</th>";
+    html += "  <thead><tr><th id='thTeacherCreatedClasses' class='hover thTeacherScroll'>  Created Classes  </th>";
     html += "<th id='thTeacherCreatedStudents' class='hover divChosen thTeacherScroll'>Created Students</th></tr>";
     html += "<tr><th id='thTeacherCreatedCompetences' class='hover thTeacherScroll'>Created Competences</th>";
     html += "<th id='thTeacherVisibleCompetences' class='hover thTeacherScroll'>Visible Competences</th></tr>";
@@ -248,6 +248,7 @@ function loadScrollingForTeacher(id, session) {
     html += "<tr><th id='thTeacherCreatedTasks' class='hover thTeacherScroll'>Created Tasks</th>";
     html += "<th id='thTeacherVisibleTasks' class='hover thTeacherScroll'>Visible Tasks</th></tr>";
     html += "</thead>";
+    html += "  <tr><td colspan='2' id='tdTeacherEntities+' class='tdTeacherCreatedStudents center hover'>+</td></tr>"
     var entities = session.user.user.createdstudents;
     for (var i = 0; i < entities.length; i++) {
         html += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='tdTeacherCreatedStudents tdTeacherScroll hover'>" + entities[i].name + "</td></tr>"
@@ -255,6 +256,7 @@ function loadScrollingForTeacher(id, session) {
     html += "</table>";
     document.getElementById(id).innerHTML = html;
     setTeacherEntityClickListener(session);
+    setTeacherEntityAddListener(session);
 
     var elements = document.getElementsByClassName("thTeacherScroll");
     for (var i = 0; i < elements.length; i++) {
@@ -288,49 +290,158 @@ function loadScrollingForTeacher(id, session) {
             var newLines = "";
             var entities;
             var className;
+            var newEntity;
             switch (this.id) {
                 case "thTeacherCreatedClasses":
                     entities = session.user.user.createdclasses;
-                    className='tdTeacherCreatedClasses';
+                    className = 'tdTeacherCreatedClasses';
+                    newEntity = true;
                     break;
                 case "thTeacherCreatedStudents":
                     entities = session.user.user.createdstudents;
-                    className='tdTeacherCreatedStudents';
+                    className = 'tdTeacherCreatedStudents';
+                    newEntity = true;
                     break;
                 case "thTeacherCreatedCompetences":
                     entities = session.user.user.createdcompetences;
-                    className='tdTeacherCreatedCompetences';
+                    className = 'tdTeacherCreatedCompetences';
+                    newEntity = true;
                     break;
                 case "thTeacherCreatedCstructures":
                     entities = session.user.user.createdcstructures;
-                    className='tdTeacherCreatedCstructures';
+                    className = 'tdTeacherCreatedCstructures';
+                    newEntity = true;
                     break;
                 case "thTeacherCreatedTasks":
                     entities = session.user.user.createdtasks;
-                    className='tdTeacherCreatedTasks';
+                    className = 'tdTeacherCreatedTasks';
+                    newEntity = true;
                     break;
                 case "thTeacherVisibleCompetences":
                     entities = session.user.user.visiblecompetences;
-                    className='tdTeacherVisibleCompetences';
+                    className = 'tdTeacherVisibleCompetences';
+                    newEntity = false;
                     break;
                 case "thTeacherVisibleCstructures":
                     entities = session.user.user.visiblecstructures;
-                    className='tdTeacherVisibleCstructures';
+                    className = 'tdTeacherVisibleCstructures';
+                    newEntity = false;
                     break;
                 case "thTeacherVisibleTasks":
                     entities = session.user.user.visibletasks;
-                    className='tdTeacherVisibleTasks';
+                    className = 'tdTeacherVisibleTasks';
+                    newEntity = false;
                     break;
             }
+            if(newEntity)
+                newLines += "  <tr><td colspan='2' id='tdTeacherEntities+' class='" + className + " center tdTeacherCreatedStudents hover'>+</td></tr>"
             for (var i = 0; i < entities.length; i++) {
                 newLines += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='"+className+" tdTeacherScroll hover'>" + entities[i].name + "</td></tr>"
             }
             table.tBodies[0].innerHTML += newLines;
             setTeacherEntityClickListener(session);
-            
+            setTeacherEntityAddListener(session);
+
+            //set right side empty
+            document.getElementById('divTeacherRight').innerHTML = "";
+            //set +entity as current choice
+            if (document.getElementById('tdTeacherEntities+') != null)
+                document.getElementById('tdTeacherEntities+').click();
         }
     }
 
+}
+
+function setTeacherEntityAddListener(session) {
+    var element = document.getElementById("tdTeacherEntities+");
+    if (element != null) {
+        element.onclick = function () {
+            var classId = document.getElementById("tdTeacherEntities+").className.split(" ")[0];
+            var html = "";
+            switch (classId) {
+                case "tdTeacherCreatedClasses":
+                    html += "<h3>Adding a new Class</h3>";
+                    html += "<p>Name: <input type='text' id='addEntityName'></p>";
+                    html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    break;
+                case "tdTeacherCreatedStudents":
+                    html += "<h3>Adding a new Student</h3>";
+                    html += "<p>Username: <input type='text' id='addEntityName'></p>";
+                    html += "<p>Password: <input type='text' id='addEntityPassword'></p>";
+                    break;
+                case "tdTeacherCreatedCompetences":
+                    html += "<h3>Adding a new Competence</h3>";
+                    html += "<p>Name: <input type='text' id='addEntityName'></p>";
+                    html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    break;
+                case "tdTeacherCreatedCstructures":
+                    html += "<h3>Adding a new Competence-Structure</h3>";
+                    html += "<p>Name: <input type='text' id='addEntityName'></p>";
+                    html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    break;
+                case "tdTeacherCreatedTasks":
+                    html += "<h3>Adding a new Task</h3>";
+                    html += "<p>Name: <input type='text' id='addEntityName'></p>";
+                    html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
+                    html += "<p>Question:</p> <textarea rows='7' cols='70' id='addEntityQuestion'></textarea >";
+                    html += "<p>Answer: <input type='text' id='addEntityAnswer'></p>";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    break;
+            }
+            html += "<input type='button' id='submitNewEntity' value='Submit'>";
+            document.getElementById('divTeacherRight').innerHTML = html;
+
+            document.getElementById('submitNewEntity').onclick = function () {
+                var classId = document.getElementById("tdTeacherEntities+").className.split(" ")[0];
+                var submittedEntity = null;
+                switch (classId) {
+                    case "tdTeacherCreatedClasses":
+                        var claz = new clazz();
+                        claz.name = document.getElementById('addEntityName').value;
+                        claz.description = document.getElementById('addEntityDescription').value;
+                        claz.visibility = document.getElementById('addEntityVisible').checked ? "ALL" : "NOTALL";
+                        submittedEntity = claz;
+                        break;
+                    case "tdTeacherCreatedStudents":
+                        var student = new user();
+                        student.usergroup = 1;
+                        student.name = document.getElementById('addEntityName').value;
+                        student.password = document.getElementById('addEntityPassword').value;
+                        submittedEntity = student;
+                        break;
+                    case "tdTeacherCreatedCompetences":
+                        var comp = new competence();
+                        comp.name = document.getElementById('addEntityName').value;
+                        comp.description = document.getElementById('addEntityDescription').value;
+                        comp.visibility = document.getElementById('addEntityVisible').checked ? "ALL" : "NOTALL";
+                        submittedEntity = comp;
+                        break;
+                    case "tdTeacherCreatedCstructures":
+                        var cs = new cstructure();
+                        cs.name = document.getElementById('addEntityName').value;
+                        cs.description = document.getElementById('addEntityDescription').value;
+                        cs.visibility = document.getElementById('addEntityVisible').checked ? "ALL" : "NOTALL";
+                        submittedEntity = cs;
+                        break;
+                    case "tdTeacherCreatedTasks":
+                        var tas = new task();
+                        tas.name = document.getElementById('addEntityName').value;
+                        tas.description = document.getElementById('addEntityDescription').value;
+                        tas.text = document.getElementById('addEntityQuestion').value;
+                        tas.answer = document.getElementById('addEntityAnswer').value;
+                        tas.visibility = document.getElementById('addEntityVisible').checked ? "ALL" : "NOTALL";
+                        submittedEntity = task;
+                        break;
+                }
+
+                postEntity(sessionInformation.username, sessionInformation.password, submittedEntity);
+            }
+
+        }
+    }
 }
 
 function setTeacherEntityClickListener(session) {
@@ -364,8 +475,6 @@ function setTeacherEntityClickListener(session) {
 }
 
 function loadTeacherEntityInfo(name, session) {
-    var html = "";
-
     var elements = document.getElementsByClassName("thTeacherScroll");
     var chosenId = -1;
     //find selected item
@@ -376,34 +485,197 @@ function loadTeacherEntityInfo(name, session) {
             break;
         }
     }
+
+    var html = "";
+    var unit = null;
     switch (chosenId) {
         case "thTeacherCreatedClasses":
-            html += "Created Class: " + name;
+            for (var i = 0; i < session.user.user.createdclasses.length; i++) {
+                if (session.user.user.createdclasses[i].name == name) {
+                    unit = session.user.user.createdclasses[i];
+                    break;
+                }
+            }
+            html += "<h3>Created Class</h3>";
+            html += "<p>Name: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<input type='button' id='deleteEntity' value='Delete'>";
             break;
         case "thTeacherCreatedStudents":
-            html += "Created Student: " + name;
+            for (var i = 0; i < session.user.user.createdstudents.length; i++) {
+                if (session.user.user.createdstudents[i].name == name) {
+                    unit = session.user.user.createdstudents[i];
+                    break;
+                }
+            }
+            html += "<h3>Created Student</h3>";
+            html += "<p>Username: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
+            html += "<p>Password: <input type='password' id='viewEntityPassword' value='xxxxxxxx'></p>";
+            html += "<input type='button' id='deleteEntity' value='Delete'>";
             break;
         case "thTeacherCreatedCompetences":
-            html += "Created Competence: " + name;
+            for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
+                if (session.user.user.createdcompetences[i].name == name) {
+                    unit = session.user.user.createdcompetences[i];
+                    break;
+                }
+            }
+            html += "<h3>Created Competence</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<input type='button' id='deleteEntity' value='Delete'>";
             break;
         case "thTeacherCreatedCstructures":
-            html += "Created C.-Structure: " + name;
+            for (var i = 0; i < session.user.user.createdcstructures.length; i++) {
+                if (session.user.user.createdcstructures[i].name == name) {
+                    unit = session.user.user.createdcstructures[i];
+                    break;
+                }
+            }
+            html += "<h3>Created Competence-Structure</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<input type='button' id='deleteEntity' value='Delete'>";
             break;
         case "thTeacherCreatedTasks":
-            html += "Created Task: " + name;
+            for (var i = 0; i < session.user.user.createdtasks.length; i++) {
+                if (session.user.user.createdtasks[i].name == name) {
+                    unit = session.user.user.createdtasks[i];
+                    break;
+                }
+            }
+            html += "<h3>Created Task</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion'>" + unit.text + "</textarea >";
+            html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<input type='button' id='deleteEntity' value='Delete'>";
             break;
         case "thTeacherVisibleCompetences":
-            html += "Visible Competence: " + name;
+            for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
+                if (session.user.user.visiblecompetences[i].name == name) {
+                    unit = session.user.user.visiblecompetences[i];
+                    break;
+                }
+            }
+            html += "<h3>Visible Competence</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
             break;
         case "thTeacherVisibleCstructures":
-            html += "Visible C.-Structure: " + name;
+            for (var i = 0; i < session.user.user.visiblecstructures.length; i++) {
+                if (session.user.user.visiblecstructures[i].name == name) {
+                    unit = session.user.user.visiblecstructures[i];
+                    break;
+                }
+            }
+            html += "<h3>Visible Competence-Structure</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
             break;
         case "thTeacherVisibleTasks":
-            html += "Visible Task: " + name;
+            for (var i = 0; i < session.user.user.visibletasks.length; i++) {
+                if (session.user.user.visibletasks[i].name == name) {
+                    unit = session.user.user.visibletasks[i];
+                    break;
+                }
+            }
+            html += "<h3>Visible Task</h3>";
+            html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
+            html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
+            html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion' >" + unit.text + "</textarea >";
+            html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
             break;
     }
 
     document.getElementById('divTeacherRight').innerHTML = html;
+    setTeacherEntityDeleteListener(session);
+}
+
+function setTeacherEntityDeleteListener(session) {
+    document.getElementById('deleteEntity').onclick = function () {
+        var elements = document.getElementsByClassName("thTeacherScroll");
+        var chosenId = -1;
+        //find selected item
+        for (var i = 0; i < elements.length; i++) {
+            var classes = elements[i].className.split(" ");
+            if (classes.indexOf("divChosen") > -1) {
+                chosenId = elements[i].id;
+                break;
+            }
+        }
+
+        //find chosen entity
+        var name = null;
+        elements = document.getElementsByClassName("tdTeacherScroll");
+        for (var i = 0; i < elements.length; i++) {
+            var classes = elements[i].className.split(" ");
+            if (classes.indexOf("divChosen") > -1) {
+                name = elements[i].innerHTML;
+                break;
+            }
+        }
+
+
+        var xml="";
+        var unit = null;
+        switch (chosenId) {
+            case "thTeacherCreatedClasses":
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (sessionInformation.user.user.createdclasses[i].name == name) {
+                        unit = sessionInformation.user.user.createdclasses[i];
+                        break;
+                    }
+                }
+                xml += "class";
+                break;
+            case "thTeacherCreatedStudents":
+                for (var i = 0; i < sessionInformation.user.user.createdstudents.length; i++) {
+                    if (sessionInformation.user.user.createdstudents[i].name == name) {
+                        unit = sessionInformation.user.user.createdstudents[i];
+                        break;
+                    }
+                }
+                xml += "user";
+                break;
+            case "thTeacherCreatedCompetences":
+                for (var i = 0; i < sessionInformation.user.user.createdcompetences.length; i++) {
+                    if (sessionInformation.user.user.createdcompetences[i].name == name) {
+                        unit = sessionInformation.user.user.createdcompetences[i];
+                        break;
+                    }
+                }
+                xml += "competence";
+                break;
+            case "thTeacherCreatedCstructures":
+                for (var i = 0; i < sessionInformation.user.user.createdcstructures.length; i++) {
+                    if (sessionInformation.user.user.createdcstructures[i].name == name) {
+                        unit = sessionInformation.user.user.createdcstructures[i];
+                        break;
+                    }
+                }
+                xml += "competencestructure";
+                break;
+            case "thTeacherCreatedTasks":
+                for (var i = 0; i < sessionInformation.user.user.createdtasks.length; i++) {
+                    if (sessionInformation.user.user.createdtasks[i].name == name) {
+                        unit = sessionInformation.user.user.createdtasks[i];
+                        break;
+                    }
+                }
+                xml += "task";
+                break;
+        }
+        //alert(unit.visibility);
+        deleteEntity(sessionInformation.username, sessionInformation.password, xml, unit);
+    }
 }
 
 function loadStartPageMenuTeacher(id, session) {

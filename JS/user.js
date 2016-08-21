@@ -43,6 +43,114 @@ function TheUser(xml) {
         str += "</loginxml>";
         return str;
     };
+    this.addElement = function (unit) {
+        if (this.usergroup == 2) {
+            //teacher add element
+            var elements = document.getElementsByClassName("thTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+
+            switch (chosenId) {
+                case "thTeacherCreatedClasses":
+                    this.user.createdclasses.push(unit);
+                    break;
+                case "thTeacherCreatedStudents":
+                    this.user.createdstudents.push(unit);
+                    break;
+                case "thTeacherCreatedCompetences":
+                    this.user.createdcompetences.push(unit);
+                    break;
+                case "thTeacherCreatedCstructures":
+                    this.user.createdcstructures.push(unit);
+                    break;
+                case "thTeacherCreatedTasks":
+                    this.user.createdtasks.push(unit);
+                    break;
+                case "thTeacherVisibleCompetences":
+                    break;
+                case "thTeacherVisibleCstructures":
+                    break;
+                case "thTeacherVisibleTasks":
+                    break;
+            }
+
+            document.getElementById(chosenId).click();
+            //alert(chosenId + unit.name);
+        } else {
+            alert("Usergroup - addElement not implemented");
+        }
+
+    };
+    this.deleteElement = function (entity) {
+        if (this.usergroup == 2) {
+
+            //teacher delete element
+            var elements = document.getElementsByClassName("thTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+
+            switch (chosenId) {
+                case "thTeacherCreatedTasks":
+                    for (var i = 0; i < this.user.createdtasks.length; i++) {
+                        if (this.user.createdtasks[i].name == entity.name) {
+                            this.user.createdtasks.splice(i, 1);
+                            break;
+                        }
+                    }
+                    break;
+                case "thTeacherCreatedClasses":
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == entity.name) {
+                            this.user.createdclasses.splice(i, 1);
+                            break;
+                        }
+                    }
+                    break;
+                case "thTeacherCreatedCompetences":
+                    for (var i = 0; i < this.user.createdcompetences.length; i++) {
+                        if (this.user.createdcompetences[i].name == entity.name) {
+                            this.user.createdcompetences.splice(i, 1);
+                            break;
+                        }
+                    }
+                    break;
+                case "thTeacherCreatedCstructures":
+                    for (var i = 0; i < this.user.createdcstructures.length; i++) {
+                        if (this.user.createdcstructures[i].name == entity.name) {
+                            this.user.createdcstructures.splice(i, 1);
+                            break;
+                        }
+                    }
+                    break;
+                case "thTeacherCreatedStudents":
+                    for (var i = 0; i < this.user.createdstudents.length; i++) {
+                        if (this.user.createdstudents[i].name == entity.name) {
+                            this.user.createdstudents.splice(i, 1);
+                            break;
+                        }
+                    }
+                    break;
+            }
+
+            document.getElementById(chosenId).click();
+        } else {
+            alert("Usergroup - deleteElement not implemented");
+        }
+    };
 }
 
 function Unknown(parser) {
@@ -214,6 +322,8 @@ function task(parser) {
     this.text;
     this.answer;
     this.fillTask = function (parser) {
+        if (parser === undefined)
+            return;
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
         this.text = parser.getElementsByTagName("text")[0].childNodes[0].nodeValue;
@@ -227,6 +337,18 @@ function task(parser) {
         str += "<text>" + this.text + "</text>";
         str += "<answer>" + this.answer + "</answer>";
         str += "</task>";
+        return str;
+    };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>task</type>";
+        xml += "<name>" + this.name + "</name>";
+        xml += "<description>" + this.description + "</description>";
+        xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "<text>" + this.text + "</text>";
+        xml += "<answer>" + this.answer + "</answer>";
+        xml += "</entity>";
+        return xml;
     };
 }
 
@@ -234,6 +356,8 @@ function cstructure(parser) {
     this.name;
     this.description;
     this.fillCstructure = function (parser) {
+        if (parser === undefined)
+            return;
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
     }
@@ -243,6 +367,16 @@ function cstructure(parser) {
         str += "<name>" + this.name + "</name>";
         str += "<description>" + this.description + "</description>";
         str += "</competencestructure>";
+        return str;
+    };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>competencestructure</type>";
+        xml += "<name>" + this.name + "</name>";
+        xml += "<description>" + this.description + "</description>";
+        xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "</entity>";
+        return xml;
     };
 }
 
@@ -250,6 +384,8 @@ function competence(parser) {
     this.name;
     this.description;
     this.fillCompetence = function (parser) {
+        if (parser === undefined)
+            return;
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
     }
@@ -261,6 +397,15 @@ function competence(parser) {
         str += "</competence>";
         return str;
     };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>competence</type>";
+        xml += "<name>" + this.name + "</name>";
+        xml += "<description>" + this.description + "</description>";
+        xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "</entity>";
+        return xml;
+    };
 }
 
 function clazz(parser) {
@@ -269,6 +414,8 @@ function clazz(parser) {
     this.description;
     this.id;
     this.fillClass = function (parser) {
+        if (parser === undefined)
+            return;
         this.visibility = parser.getElementsByTagName("visibility")[0].childNodes[0].nodeValue;
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
@@ -282,14 +429,26 @@ function clazz(parser) {
         str += "</class>";
         return str;
     };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>class</type>";
+        xml += "<name>" + this.name + "</name>";
+        xml += "<description>" + this.description + "</description>";
+        xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "</entity>";
+        return xml;
+    };
 }
 
 function user(parser) {
     this.registeredclasses = new Array();
     this.createdclasses = new Array();
     this.usergroup;
+    this.password;
     this.name;
     this.fillUser = function (parser) {
+        if (parser === undefined)
+            return;
         this.usergroup = parseInt(parser.getElementsByTagName("usergroup")[0].childNodes[0].nodeValue);
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("registeredclasses").length > 0) {
@@ -326,5 +485,14 @@ function user(parser) {
         }
         str += "</user>";
         return str;
+    };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>user</type>";
+        xml += "<name>" + this.name + "</name>";
+        xml += "<usergroup>" + this.usergroup + "</usergroup>";
+        xml += "<password>"+this.password+"</password>";
+        xml += "</entity>";
+        return xml;
     };
 }

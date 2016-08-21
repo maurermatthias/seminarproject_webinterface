@@ -2,7 +2,8 @@ function SessionInformation(){
     this.username=null;
     this.password=null;
     this.user=null;
-    this.userloggedin=false;
+    this.userloggedin = false;
+    this.submittedEntity = null;
     this.login = function (username, password) {
         this.username = username;
         this.password = password;
