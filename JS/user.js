@@ -60,18 +60,51 @@ function TheUser(xml) {
             switch (chosenId) {
                 case "thTeacherCreatedClasses":
                     this.user.createdclasses.push(unit);
+                    document.getElementById(chosenId).click();
                     break;
                 case "thTeacherCreatedStudents":
                     this.user.createdstudents.push(unit);
+                    document.getElementById(chosenId).click();
                     break;
                 case "thTeacherCreatedCompetences":
                     this.user.createdcompetences.push(unit);
+                    document.getElementById(chosenId).click();
                     break;
                 case "thTeacherCreatedCstructures":
                     this.user.createdcstructures.push(unit);
+                    document.getElementById(chosenId).click();
                     break;
                 case "thTeacherCreatedTasks":
-                    this.user.createdtasks.push(unit);
+                    var button = document.getElementById('buttonaddtaskcompetencelinkage');
+                    if (button = null) {
+                        this.user.createdtasks.push(unit);
+                        document.getElementById(chosenId).click();
+                    }
+                    else {
+                        var task;
+                        for (var i = 0; i < this.user.createdtasks.length; i++) {
+                            if (unit.taskname == this.user.createdtasks[i].name) {
+                                task = this.user.createdtasks[i];
+                                break;
+                            }
+                        }
+                        task.competencelinks.push(unit);
+
+                        //find taskid selected
+                        var elements = document.getElementsByClassName("tdTeacherCreatedTasks");
+                        var chosenId2 = -1;
+                        //find selected item
+                        for (var i = 0; i < elements.length; i++) {
+                            var classes = elements[i].className.split(" ");
+                            if (classes.indexOf("divChosen") > -1) {
+                                chosenId2 = elements[i].id;
+                                break;
+                            }
+                        }
+
+                        document.getElementById(chosenId).click();
+                        document.getElementById(chosenId2).click();
+                    }
                     break;
                 case "thTeacherVisibleCompetences":
                     break;
@@ -81,14 +114,17 @@ function TheUser(xml) {
                     break;
             }
 
-            document.getElementById(chosenId).click();
             //alert(chosenId + unit.name);
+
+            //set new view
+            //if (document.getElementById('tdTeacherEntities+') != null)
+            //    document.getElementById('tdTeacherEntities+').click();
         } else {
             alert("Usergroup - addElement not implemented");
         }
 
     };
-    this.deleteElement = function (entity) {
+    this.deleteElement = function (entity,xml) {
         if (this.usergroup == 2) {
 
             //teacher delete element
@@ -103,50 +139,85 @@ function TheUser(xml) {
                 }
             }
 
-            switch (chosenId) {
-                case "thTeacherCreatedTasks":
+            var type = this.getParser(xml).getElementsByTagName("type")[0].childNodes[0].nodeValue;
+
+            switch (type) {
+                case "task":
                     for (var i = 0; i < this.user.createdtasks.length; i++) {
                         if (this.user.createdtasks[i].name == entity.name) {
                             this.user.createdtasks.splice(i, 1);
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedClasses":
+                case "class":
                     for (var i = 0; i < this.user.createdclasses.length; i++) {
                         if (this.user.createdclasses[i].name == entity.name) {
                             this.user.createdclasses.splice(i, 1);
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedCompetences":
+                case "competence":
                     for (var i = 0; i < this.user.createdcompetences.length; i++) {
                         if (this.user.createdcompetences[i].name == entity.name) {
                             this.user.createdcompetences.splice(i, 1);
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedCstructures":
+                case "competencestructure":
                     for (var i = 0; i < this.user.createdcstructures.length; i++) {
                         if (this.user.createdcstructures[i].name == entity.name) {
                             this.user.createdcstructures.splice(i, 1);
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedStudents":
+                case "user":
                     for (var i = 0; i < this.user.createdstudents.length; i++) {
                         if (this.user.createdstudents[i].name == entity.name) {
                             this.user.createdstudents.splice(i, 1);
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
+                    break;
+                case "linkagetaskcompetence":
+                    var taskentity;
+                    for (var i = 0; i < this.user.createdtasks.length; i++) {
+                        if (this.user.createdtasks[i].name == entity.taskname) {
+                            taskentity = this.user.createdtasks[i];
+                            break;
+                        }
+                    }
+                    for (var i = 0; i < taskentity.competencelinks.length; i++) {
+                        if (taskentity.competencelinks[i].competencename == entity.competencename) {
+                            taskentity.competencelinks.splice(i,1);
+                            break;
+                        }
+                    }
+
+                    //find taskid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedTasks");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
                     break;
             }
 
-            document.getElementById(chosenId).click();
         } else {
             alert("Usergroup - deleteElement not implemented");
         }
@@ -321,6 +392,7 @@ function task(parser) {
     this.description;
     this.text;
     this.answer;
+    this.competencelinks = new Array();
     this.fillTask = function (parser) {
         if (parser === undefined)
             return;
@@ -328,6 +400,12 @@ function task(parser) {
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
         this.text = parser.getElementsByTagName("text")[0].childNodes[0].nodeValue;
         this.answer = parser.getElementsByTagName("answer")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("competencelink").length > 0) {
+            var links = parser.getElementsByTagName("competencelink");
+            for (var i = 0; i < links.length; i++) {
+                this.competencelinks.push(new linkagetaskcompetence(links[i]));
+            }
+        }
     }
     this.fillTask(parser);
     this.toXML = function () {
@@ -336,6 +414,13 @@ function task(parser) {
         str += "<description>" + this.description + "</description>";
         str += "<text>" + this.text + "</text>";
         str += "<answer>" + this.answer + "</answer>";
+        if (this.competencelinks.length > 0) {
+            str += "<competencelinks>";
+            for (var i = 0; i < this.competencelinks.length; i++) {
+                str += this.competencelinks[i].toXML();
+            }
+            str += "</competencelinks>";
+        }
         str += "</task>";
         return str;
     };
@@ -347,6 +432,36 @@ function task(parser) {
         xml += "<visibility>" + this.visibility + "</visibility>";
         xml += "<text>" + this.text + "</text>";
         xml += "<answer>" + this.answer + "</answer>";
+        xml += "</entity>";
+        return xml;
+    };
+}
+
+function linkagetaskcompetence(parser) {
+    this.taskname
+    this.competencename;
+    this.weight;
+    this.fill = function (parser) {
+        if (parser === undefined)
+            return;
+        this.competencename = parser.getElementsByTagName("competence")[0].childNodes[0].nodeValue;
+        this.weight = parseFloat(parser.getElementsByTagName("weight")[0].childNodes[0].nodeValue);
+    };
+    this.fill(parser);
+    this.toXML = function () {
+        var str = "<competencelink>";
+        str += "<taskname>" + this.taskname + "</taskname>";
+        str += "<competencename>" + this.competencename + "</competencename>";
+        str += "<weight>" + this.weight + "</weight>";
+        str += "</competencelink>";
+        return(str);
+    };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>linkagetaskcompetence</type>";
+        xml += "<taskname>" + this.taskname + "</taskname>";
+        xml += "<competencename>" + this.competencename + "</competencename>";
+        xml += "<weight>" + this.weight + "</weight>";
         xml += "</entity>";
         return xml;
     };
@@ -413,6 +528,7 @@ function clazz(parser) {
     this.name;
     this.description;
     this.id;
+    this.cstructure;
     this.fillClass = function (parser) {
         if (parser === undefined)
             return;
@@ -420,6 +536,8 @@ function clazz(parser) {
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
         this.id = parser.getElementsByTagName("id")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("competencestructure").length >0)
+            this.cstructure = parser.getElementsByTagName("competencestructure")[0].childNodes[0].nodeValue;
     }
     this.fillClass(parser);
     this.toXML = function () {

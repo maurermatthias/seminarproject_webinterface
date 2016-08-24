@@ -67,12 +67,11 @@
               if (resultvalue.indexOf("success") > 0) {
                   //store data in local storage
                   sessionInformation.user.addElement(sessionInformation.submittedEntity);
-                  //set new view
-                  if (document.getElementById('tdTeacherEntities+') != null)
-                      document.getElementById('tdTeacherEntities+').click();
-              } else {
+              } else if (resultvalue.indexOf("failure") > 0) {
                   alert("There was an Error!");
                   //add error codes
+              } else  {
+                  alert("Server not reached!");
               }
           }
       }
@@ -97,13 +96,15 @@
               var resultvalue = xmlhttp.responseText;
               if (resultvalue.indexOf("success") > 0) {
                   //store data in local storage
-                  sessionInformation.user.deleteElement(entity);
+                  sessionInformation.user.deleteElement(entity, resultvalue);
                   //set new view
-                  if (document.getElementById('tdTeacherEntities+') != null)
-                      document.getElementById('tdTeacherEntities+').click();
-              } else {
+                  //if (document.getElementById('tdTeacherEntities+') != null)
+                  //    document.getElementById('tdTeacherEntities+').click();
+              } else if (resultvalue.indexOf("failure") > 0) {
                   alert("There was an Error!");
                   //add error codes
+              } else {
+                  alert("Server not reached!");
               }
           }
       }

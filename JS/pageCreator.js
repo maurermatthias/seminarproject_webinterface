@@ -349,13 +349,33 @@ function loadScrollingForTeacher(id, session) {
                 document.getElementById('tdTeacherEntities+').click();
         }
     }
-
 }
 
 function setTeacherEntityAddListener(session) {
     var element = document.getElementById("tdTeacherEntities+");
     if (element != null) {
         element.onclick = function () {
+
+            //unselect old selection
+            var elements = document.getElementsByClassName("tdTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+            if (chosenId != -1) {
+                //unselect old selected item
+                var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
+                var newClassArray = document.getElementById(chosenId).className.split(" ");
+                newClassArray.splice(pos, 1);
+                document.getElementById(chosenId).className = newClassArray.join(" ");
+                //loadStudentClassInfo(null, session);
+            }
+
             var classId = document.getElementById("tdTeacherEntities+").className.split(" ")[0];
             var html = "";
             switch (classId) {
@@ -363,7 +383,7 @@ function setTeacherEntityAddListener(session) {
                     html += "<h3>Adding a new Class</h3>";
                     html += "<p>Name: <input type='text' id='addEntityName'></p>";
                     html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
-                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible' class='hover'></p>";
                     break;
                 case "tdTeacherCreatedStudents":
                     html += "<h3>Adding a new Student</h3>";
@@ -374,13 +394,13 @@ function setTeacherEntityAddListener(session) {
                     html += "<h3>Adding a new Competence</h3>";
                     html += "<p>Name: <input type='text' id='addEntityName'></p>";
                     html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
-                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible' class='hover'></p>";
                     break;
                 case "tdTeacherCreatedCstructures":
                     html += "<h3>Adding a new Competence-Structure</h3>";
                     html += "<p>Name: <input type='text' id='addEntityName'></p>";
                     html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
-                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible' class='hover'></p>";
                     break;
                 case "tdTeacherCreatedTasks":
                     html += "<h3>Adding a new Task</h3>";
@@ -388,7 +408,7 @@ function setTeacherEntityAddListener(session) {
                     html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
                     html += "<p>Question:</p> <textarea rows='7' cols='70' id='addEntityQuestion'></textarea >";
                     html += "<p>Answer: <input type='text' id='addEntityAnswer'></p>";
-                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible'></p>";
+                    html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible' class='hover'></p>";
                     break;
             }
             html += "<input type='button' id='submitNewEntity' value='Submit'>";
@@ -499,8 +519,43 @@ function loadTeacherEntityInfo(name, session) {
             html += "<h3>Created Class</h3>";
             html += "<p>Name: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
+            //start dropdown
+            html += "<p>Linked to competence structure:";
+            html += "<div id='dropdowntaskclasslinkage' class='dropdown center'>";
+            html += "<button onclick='dropdownFunction2()' class='dropbtn' id='buttondropdown2'>";
+            if (unit.cstructure==null)
+                html += "&nbsp &nbsp &nbsp - &nbsp &nbsp &nbsp";
+            else
+                html += unit.cstructure;
+            html+="</button>";
+            html +=" <div id='myDropdown2' class='dropdown-content'>";
+            var cstructures = new Array();
+            cstructures.push("&nbsp &nbsp &nbsp - &nbsp &nbsp &nbsp");
+            for (var i = 0; i < session.user.user.createdcstructures.length; i++) {
+                if (cstructures.indexOf(session.user.user.createdcstructures[i].name) == -1 ) {
+                    cstructures.push(session.user.user.createdcstructures[i].name);
+                }
+            }
+            for (var i = 0; i < session.user.user.visiblecstructures.length; i++) {
+                if (cstructures.indexOf(session.user.user.visiblecstructures[i].name) == -1 ) {
+                    cstructures.push(session.user.user.visiblecstructures[i].name);
+                }
+            }
+            for (var i = 0; i < cstructures.length; i++) {
+                html += "<a href='#' id='dropdownlinkagetaskclass-" + cstructures[i] + "' class='dropdowncstructure'>" + cstructures[i] + "</a>";
+            }
+            html += "</div></div></p>";
+            //end dropdown
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            document.getElementById('divTeacherRight').innerHTML = html;
+            var elements = document.getElementsByClassName('dropdowncstructure');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    //submit changes -> set value afterwards
+                    document.getElementById('buttondropdown2').innerHTML = this.innerHTML;
+                }
+            }
             break;
         case "thTeacherCreatedStudents":
             for (var i = 0; i < session.user.user.createdstudents.length; i++) {
@@ -513,6 +568,7 @@ function loadTeacherEntityInfo(name, session) {
             html += "<p>Username: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
             html += "<p>Password: <input type='password' id='viewEntityPassword' value='xxxxxxxx'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
         case "thTeacherCreatedCompetences":
             for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
@@ -524,8 +580,9 @@ function loadTeacherEntityInfo(name, session) {
             html += "<h3>Created Competence</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
         case "thTeacherCreatedCstructures":
             for (var i = 0; i < session.user.user.createdcstructures.length; i++) {
@@ -537,8 +594,9 @@ function loadTeacherEntityInfo(name, session) {
             html += "<h3>Created Competence-Structure</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
         case "thTeacherCreatedTasks":
             for (var i = 0; i < session.user.user.createdtasks.length; i++) {
@@ -547,13 +605,103 @@ function loadTeacherEntityInfo(name, session) {
                     break;
                 }
             }
+
+            html += "<table class='fullTable'><colgroup><col span='1' id='colTeacherTaskLeft'><col span='1' id='colTeacherTaskRight'></colgroup>";
+            html += "<tr class='fullTr'><td id='tdTeacherTaskLeft'><div id='divTeacherTaskLeft'>";
+            //middle section start
             html += "<h3>Created Task</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion'>" + unit.text + "</textarea >";
             html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            //middle section end
+            html += "</td><td id='tdTeacherTaskRight'><div id='divTeacherTaskRight'>";
+            //right section start
+            ///*
+            html += "<table id='tableTeacherTaskLink' class='scroll' width='100%'>";
+            html += "  <thead><tr><th colspan='3'> Competence links </th></tr>";
+            html += "</thead>";
+            var alreadyLinkedCompetences = new Array();
+            var links = unit.competencelinks;
+            for (var i = 0; i < links.length; i++) {
+                alreadyLinkedCompetences.push(links[i].competencename);
+                html += "  <tr><td id='tdTeacherTaskLink" + i + "'>" + links[i].competencename + "</td><td id='tdTeacherTaskLink" + i + "'>" + links[i].weight + "</td><td id='deletetaskcompetencelinkage-" + links[i].competencename + "' class='center hover deletetaskcompetencelinkage'>-</td></tr>"
+            }
+            html += "<tfoot><tr><td id='tdTeacherTaskLink+' class='center hover'>";
+            html += "<div id='dropdowntaskcompetencelinkage' class='dropdown'>";
+            html += "<button onclick='dropdownFunction()' class='dropbtn' id='buttondropdown'>Add competence</button>";
+            html += "<div id='myDropdown' class='dropdown-content'>";
+            var strings = new Array();
+            for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
+                if (strings.indexOf(session.user.user.createdcompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1) {
+                    strings.push(session.user.user.createdcompetences[i].name);
+                }
+            }
+            for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
+                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1) {
+                    strings.push(session.user.user.visiblecompetences[i].name);
+                }
+            }
+            for (var i = 0; i < strings.length; i++) {
+                html += "<a href='#' id='dropdownlinkagetaskcomnpetence-"+strings[i]+"' class='dropdowncompetence'>"+strings[i]+"</a>";
+            }
+            html += "</div>";
+            html += "</div>";
+            html += "</td><td>weight: &nbsp &nbsp <input type='text' id='linkagetaskcompetenceweight' class='center' size='6'></td>";
+            html += "<td id='tdTeachertaskcompetencelinkage' class='center'><input type='button' id='buttonaddtaskcompetencelinkage' value='add' class='hover'></td></tr>"
+            html += "<tfoot></table>";
+            //*/
+            //right section end
+            html += "</div></td></tr></table>";
+            document.getElementById('divTeacherRight').innerHTML = html;
+
+            var elements = document.getElementsByClassName('dropdowncompetence');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    document.getElementById('buttondropdown').innerHTML = this.innerHTML;
+                }
+            }
+            document.getElementById('buttonaddtaskcompetencelinkage').onclick = function () {
+                var link = new linkagetaskcompetence();
+                link.weight = parseFloat(document.getElementById('linkagetaskcompetenceweight').value);
+                link.competencename = document.getElementById('buttondropdown').innerHTML;
+                link.taskname = document.getElementById('addEntityName').value;
+                if (isNaN(link.weight)) {
+                    alert('Please enter valid value for the weight!');
+                    return;
+                }
+                if (link.competencename == "Add competence") {
+                    alert('Please chose a competence!');
+                    return;
+                }
+                postEntity(sessionInformation.username, sessionInformation.password, link);
+            }
+            elements = document.getElementsByClassName('deletetaskcompetencelinkage');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    var competencename = this.id.substring(28, this.id.length);
+                    var name = document.getElementById('addEntityName').value;
+                    var entity;
+                    for(var i=0;i<sessionInformation.user.user.createdtasks.length;i++){
+                        if(sessionInformation.user.user.createdtasks[i].name == name){
+                            entity = sessionInformation.user.user.createdtasks[i];
+                            break;
+                        }
+                    }
+                    var entityToDelete;
+                    for (var i = 0; i < entity.competencelinks.length; i++) {
+                        if (entity.competencelinks[i].competencename == competencename) {
+                            entityToDelete = entity.competencelinks[i];
+                            break;
+                        }
+                    }
+                    entityToDelete.taskname = name;
+                    deleteEntity(sessionInformation.username, sessionInformation.password, "linkagetaskcompetence", entityToDelete);
+                }
+            }
+
             break;
         case "thTeacherVisibleCompetences":
             for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
@@ -565,7 +713,8 @@ function loadTeacherEntityInfo(name, session) {
             html += "<h3>Visible Competence</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
         case "thTeacherVisibleCstructures":
             for (var i = 0; i < session.user.user.visiblecstructures.length; i++) {
@@ -577,7 +726,8 @@ function loadTeacherEntityInfo(name, session) {
             html += "<h3>Visible Competence-Structure</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
         case "thTeacherVisibleTasks":
             for (var i = 0; i < session.user.user.visibletasks.length; i++) {
@@ -591,90 +741,92 @@ function loadTeacherEntityInfo(name, session) {
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion' >" + unit.text + "</textarea >";
             html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
-            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible'></p>";
+            html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
+            document.getElementById('divTeacherRight').innerHTML = html;
             break;
     }
 
-    document.getElementById('divTeacherRight').innerHTML = html;
     setTeacherEntityDeleteListener(session);
 }
 
 function setTeacherEntityDeleteListener(session) {
-    document.getElementById('deleteEntity').onclick = function () {
-        var elements = document.getElementsByClassName("thTeacherScroll");
-        var chosenId = -1;
-        //find selected item
-        for (var i = 0; i < elements.length; i++) {
-            var classes = elements[i].className.split(" ");
-            if (classes.indexOf("divChosen") > -1) {
-                chosenId = elements[i].id;
-                break;
+    if (document.getElementById('deleteEntity') != null) {
+        document.getElementById('deleteEntity').onclick = function () {
+            var elements = document.getElementsByClassName("thTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
             }
-        }
 
-        //find chosen entity
-        var name = null;
-        elements = document.getElementsByClassName("tdTeacherScroll");
-        for (var i = 0; i < elements.length; i++) {
-            var classes = elements[i].className.split(" ");
-            if (classes.indexOf("divChosen") > -1) {
-                name = elements[i].innerHTML;
-                break;
+            //find chosen entity
+            var name = null;
+            elements = document.getElementsByClassName("tdTeacherScroll");
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    name = elements[i].innerHTML;
+                    break;
+                }
             }
-        }
 
 
-        var xml="";
-        var unit = null;
-        switch (chosenId) {
-            case "thTeacherCreatedClasses":
-                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
-                    if (sessionInformation.user.user.createdclasses[i].name == name) {
-                        unit = sessionInformation.user.user.createdclasses[i];
-                        break;
+            var xml = "";
+            var unit = null;
+            switch (chosenId) {
+                case "thTeacherCreatedClasses":
+                    for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                        if (sessionInformation.user.user.createdclasses[i].name == name) {
+                            unit = sessionInformation.user.user.createdclasses[i];
+                            break;
+                        }
                     }
-                }
-                xml += "class";
-                break;
-            case "thTeacherCreatedStudents":
-                for (var i = 0; i < sessionInformation.user.user.createdstudents.length; i++) {
-                    if (sessionInformation.user.user.createdstudents[i].name == name) {
-                        unit = sessionInformation.user.user.createdstudents[i];
-                        break;
+                    xml += "class";
+                    break;
+                case "thTeacherCreatedStudents":
+                    for (var i = 0; i < sessionInformation.user.user.createdstudents.length; i++) {
+                        if (sessionInformation.user.user.createdstudents[i].name == name) {
+                            unit = sessionInformation.user.user.createdstudents[i];
+                            break;
+                        }
                     }
-                }
-                xml += "user";
-                break;
-            case "thTeacherCreatedCompetences":
-                for (var i = 0; i < sessionInformation.user.user.createdcompetences.length; i++) {
-                    if (sessionInformation.user.user.createdcompetences[i].name == name) {
-                        unit = sessionInformation.user.user.createdcompetences[i];
-                        break;
+                    xml += "user";
+                    break;
+                case "thTeacherCreatedCompetences":
+                    for (var i = 0; i < sessionInformation.user.user.createdcompetences.length; i++) {
+                        if (sessionInformation.user.user.createdcompetences[i].name == name) {
+                            unit = sessionInformation.user.user.createdcompetences[i];
+                            break;
+                        }
                     }
-                }
-                xml += "competence";
-                break;
-            case "thTeacherCreatedCstructures":
-                for (var i = 0; i < sessionInformation.user.user.createdcstructures.length; i++) {
-                    if (sessionInformation.user.user.createdcstructures[i].name == name) {
-                        unit = sessionInformation.user.user.createdcstructures[i];
-                        break;
+                    xml += "competence";
+                    break;
+                case "thTeacherCreatedCstructures":
+                    for (var i = 0; i < sessionInformation.user.user.createdcstructures.length; i++) {
+                        if (sessionInformation.user.user.createdcstructures[i].name == name) {
+                            unit = sessionInformation.user.user.createdcstructures[i];
+                            break;
+                        }
                     }
-                }
-                xml += "competencestructure";
-                break;
-            case "thTeacherCreatedTasks":
-                for (var i = 0; i < sessionInformation.user.user.createdtasks.length; i++) {
-                    if (sessionInformation.user.user.createdtasks[i].name == name) {
-                        unit = sessionInformation.user.user.createdtasks[i];
-                        break;
+                    xml += "competencestructure";
+                    break;
+                case "thTeacherCreatedTasks":
+                    for (var i = 0; i < sessionInformation.user.user.createdtasks.length; i++) {
+                        if (sessionInformation.user.user.createdtasks[i].name == name) {
+                            unit = sessionInformation.user.user.createdtasks[i];
+                            break;
+                        }
                     }
-                }
-                xml += "task";
-                break;
+                    xml += "task";
+                    break;
+            }
+            //alert(unit.visibility);
+            deleteEntity(sessionInformation.username, sessionInformation.password, xml, unit);
         }
-        //alert(unit.visibility);
-        deleteEntity(sessionInformation.username, sessionInformation.password, xml, unit);
     }
 }
 
