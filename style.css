@@ -242,3 +242,17 @@ body{
 #colTeacherClassRight{
     width:50%;
 }
+#colTeacherCstructureLeft{
+    width:50%;
+}
+#colTeacherCstructureRight{
+    width:50%;
+}
+#divTeacherCstructureLeft{
+        height:100%;
+    margin:10px;
+}
+#divTeacherCstructureRight{
+        height:100%;
+    margin:10px;
+}

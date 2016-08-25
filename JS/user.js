@@ -141,17 +141,69 @@ function TheUser(xml) {
                     document.getElementById(chosenId).click();
                     document.getElementById(chosenId2).click();
                     break;
+                case "competenceweight":
+                    var cstruct;
+                    for (var i = 0; i < this.user.createdcstructures.length; i++) {
+                        if (this.user.createdcstructures[i].name == entity.cstructurename) {
+                            cstruct = this.user.createdcstructures[i];
+                            break;
+                        }
+                    }
+                    cstruct.weights.push(entity);
+
+                    //find cstructureid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedCstructures");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
+                    break;
                 default:
                     alert("Add for this element not implemented!");
                     break;
             }
+        } else if (this.usergroup == 1) {
+            //student add element
+            var elements = document.getElementsByClassName("thStudentClass");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
 
-            //alert(chosenId + unit.name);
 
-            //set new view
-            //if (document.getElementById('tdTeacherEntities+') != null)
-            //    document.getElementById('tdTeacherEntities+').click();
-        } else {
+            var type = this.getParser(xml).getElementsByTagName("type")[0].childNodes[0].nodeValue;
+
+            switch (type) {
+                case "studentregistration":
+                    var clazz;
+                    for (var i = 0; i < this.user.availableclasses.length; i++) {
+                        if (entity.classname == this.user.availableclasses[i].name) {
+                            clazz = this.user.availableclasses[i];
+                            this.user.availableclasses.splice(i, 1);
+                            break;
+                        }
+                    }
+                    this.user.registeredclasses.push(clazz);
+                    document.getElementById(chosenId).click();
+                    break;
+                default:
+                    alert("Add for this element not implemented!");
+                    break;
+            }
+        }else {
             alert("Usergroup - addElement not implemented");
         }
 
@@ -284,11 +336,72 @@ function TheUser(xml) {
                     document.getElementById(chosenId).click();
                     document.getElementById(chosenId2).click();
                     break;
+                case "competenceweight":
+                    var cstruct;
+                    for (var i = 0; i < this.user.createdcstructures.length; i++) {
+                        if (this.user.createdcstructures[i].name == entity.cstructurename) {
+                            cstruct = this.user.createdcstructures[i];
+                            break;
+                        }
+                    }
+                    for (var i = 0; i < cstruct.weights.length; i++) {
+                        if (cstruct.weights[i].fromname == entity.fromname && cstruct.weights[i].toname == entity.toname) {
+                            cstruct.weights.splice(i,1);
+                        }
+                    }
+
+                    //find cstructureid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedCstructures");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
+                    break;
                 default:
                     alert("Delete for this element not implemented!");
                     break;
             }
 
+        } else if (this.usergroup == 1) {
+            //student delete element
+            var elements = document.getElementsByClassName("thStudentClass");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+
+            var type = this.getParser(xml).getElementsByTagName("type")[0].childNodes[0].nodeValue;
+
+            switch (type) {
+                case "studentregistration":
+                    var clazz;
+                    for (var i = 0; i < this.user.registeredclasses.length; i++) {
+                        if (entity.classname == this.user.registeredclasses[i].name) {
+                            clazz = this.user.registeredclasses[i];
+                            this.user.registeredclasses.splice(i, 1);
+                            break;
+                        }
+                    }
+                    this.user.availableclasses.push(clazz);
+                    document.getElementById(chosenId).click();
+                    break;
+                default:
+                    alert("Delete for this element not implemented!");
+                    break;
+            }
         } else {
             alert("Usergroup - deleteElement not implemented");
         }
@@ -583,11 +696,18 @@ function linkagetaskcompetence(parser) {
 function cstructure(parser) {
     this.name;
     this.description;
+    this.weights = new Array();
     this.fillCstructure = function (parser) {
         if (parser === undefined)
             return;
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("competenceweight").length > 0) {
+            var elements = parser.getElementsByTagName("competenceweight");
+            for (var i = 0; i < elements.length;i++){
+                this.weights.push(new competenceweight(elements[i]));
+            }
+        }
     }
     this.fillCstructure(parser);
     this.toXML = function () {
@@ -603,6 +723,40 @@ function cstructure(parser) {
         xml += "<name>" + this.name + "</name>";
         xml += "<description>" + this.description + "</description>";
         xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "</entity>";
+        return xml;
+    };
+}
+
+function competenceweight(parser) {
+    this.cstructurename;
+    this.fromname;
+    this.toname;
+    this.weight;
+    this.fillCompetenceweight = function (parser) {
+        if (parser === undefined)
+            return;
+        this.fromname = parser.getElementsByTagName("from")[0].childNodes[0].nodeValue;
+        this.toname = parser.getElementsByTagName("to")[0].childNodes[0].nodeValue;
+        this.weight = parser.getElementsByTagName("weight")[0].childNodes[0].nodeValue;
+    };
+    this.fillCompetenceweight(parser);
+    this.toXML = function () {
+        var xml = "<competenceweight>";
+        xml += "<fromname>" + this.fromname + "</fromname>";
+        xml += "<toname>" + this.toname + "</toname>";
+        xml += "<weight>" + this.weight + "</weight>";
+        xml += "<cstructurename>" + this.cstructurename + "</cstructurename>";
+        xml += "</competenceweight>";
+        return xml;
+    };
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>competenceweight</type>";
+        xml += "<fromname>" + this.fromname + "</fromname>";
+        xml += "<toname>" + this.toname + "</toname>";
+        xml += "<weight>" + this.weight + "</weight>";
+        xml += "<cstructurename>" + this.cstructurename + "</cstructurename>";
         xml += "</entity>";
         return xml;
     };
@@ -773,6 +927,19 @@ function user(parser) {
         xml += "<name>" + this.name + "</name>";
         xml += "<usergroup>" + this.usergroup + "</usergroup>";
         xml += "<password>"+this.password+"</password>";
+        xml += "</entity>";
+        return xml;
+    };
+}
+
+function studentregistration() {
+    this.classname;
+    this.studentname;
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>studentregistration</type>";
+        xml += "<classname>" + this.classname + "</classname>";
+        xml += "<studentname>" + this.studentname + "</studentname>";
         xml += "</entity>";
         return xml;
     };

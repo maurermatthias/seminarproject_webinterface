@@ -77,9 +77,9 @@ function loadStartPageMenuUnknown(id, session) {
 function loadStartPageContentStudent(id, session) {
     var html = "<table class='fullTable'><colgroup><col span='1' id='colStudentLeft'><col span='1' id='colStudentRight'></colgroup>";
     html += "<tr class='fullTr'><td id='tdStudentLeft'><div id='divStudentLeft'>";
-    html += "left";
+    html += "";
     html += "</div></td><td id='tdStudentRight'><div id='divStudentRight'>";
-    html += "right";
+    html += "";
     html += "</div></td></tr></table>";
     document.getElementById(id).innerHTML = html;
 
@@ -189,7 +189,7 @@ function loadStartPageMenuStudent(id, session) {
 
 function loadStudentClassInfo(classname, session) {
     if (classname == null) {
-        document.getElementById('divStudentRight').innerHTML = "right";
+        document.getElementById('divStudentRight').innerHTML = "";
         return;
     }
     //get class by name
@@ -212,14 +212,36 @@ function loadStudentClassInfo(classname, session) {
     }
 
     var html = "<div id='divStudentClass'>";
-    html += "NAME: " + clazz.name + "</br>";
     if (registeredForClass) {
-        html += "ALREADY REGISTERED";
+        html += "<h3>Registered Class</h3>";
     } else {
-        html += "NOT REGISTERED";
+        html += "<h3>Available Class</h3>";
     }
+    html += "<p>Name: <input type='text' id='viewEntityName' value='" + clazz.name + "' readonly></p>";
+    html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription' readonly>" + clazz.description + "</textarea >";
+    html += "<p><input type='button' id='studentButtonRegister' value='";
+    if (registeredForClass) {
+        html += "Deregister";
+    } else {
+        html += "Register";
+    }
+    html += "'></p>";
+
     html += "<div>";
     document.getElementById('divStudentRight').innerHTML = html;
+
+    document.getElementById('studentButtonRegister').onclick = function () {
+        var entity = new studentregistration();
+        entity.classname = document.getElementById('viewEntityName').value;
+        entity.studentname = sessionInformation.username;
+        if (this.value == "Register") {
+            postEntity(sessionInformation.username, sessionInformation.password, entity);
+        } else if (this.value == "Deregister") {
+            deleteEntity(sessionInformation.username, sessionInformation.password, entity);
+        } else {
+            alert("Line should not be reached!");
+        }
+    }
 }
 
 
@@ -672,12 +694,69 @@ function loadTeacherEntityInfo(name, session) {
                     break;
                 }
             }
+
+            html += "<table class='fullTable'><colgroup><col span='1' id='colTeacherCstructureLeft'><col span='1' id='colTeacherCstructureRight'></colgroup>";
+            html += "<tr class='fullTr'><td id='tdTeacherCstructureLeft'><div id='divTeacherCstructureLeft'>";
+            //middle section start
             html += "<h3>Created Competence-Structure</h3>";
             html += "<p>Name: <input type='text' id='addEntityName' value='" + unit.name + "'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            //middle section end
+            html += "</td><td id='tdTeacherCstructureRight'><div id='divTeacherCstructureRight'>";
+            //right section start
+            html += "<table id='tableTeacherCstructureLink' class='scroll' width='100%'>";
+            html += "  <thead><tr><th colspan='4'> Competence Weights </th></tr>";
+            html += "</thead><tbody>";
+            var links = unit.weights;
+            for (var i = 0; i < links.length; i++) {
+                html += "  <tr><td id='tdTeacherCstructureFrom" + i + "'>" + links[i].fromname + "</td><td id='tdTeacherCstructureTo" + i + "'>" + links[i].toname + "</td>";
+                html += "<td id='tdTeacherCstructureWeight" + i + "'>" + links[i].weight + "</td><td id='deletetaskcompetencelinkage-" + i+ "' class='center hover deletetaskcompetencelinkage'>-</td></tr>"
+            }
+            html += "</tbody>";
+            /*
+            html+="<tfoot><tr><td id='tdTeacherTaskLink+' class='center hover'>";
+            html += "<div id='dropdowntaskcompetencelinkage' class='dropdown'>";
+            html += "<button onclick='dropdownFunction()' class='dropbtn' id='buttondropdown'>Add competence</button>";
+            html += "<div id='myDropdown' class='dropdown-content'>";
+            var strings = new Array();
+            for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
+                if (strings.indexOf(session.user.user.createdcompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1) {
+                    strings.push(session.user.user.createdcompetences[i].name);
+                }
+            }
+            for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
+                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.visiblecompetences[i].name) == -1) {
+                    strings.push(session.user.user.visiblecompetences[i].name);
+                }
+            }
+            for (var i = 0; i < strings.length; i++) {
+                html += "<a href='#' id='dropdownlinkagetaskcomnpetence-" + strings[i] + "' class='dropdowncompetence'>" + strings[i] + "</a>";
+            }
+            html += "</div>";
+            html += "</div>";
+            html += "</td><td>weight: &nbsp &nbsp <input type='text' id='linkagetaskcompetenceweight' class='center' size='6'></td>";
+            html += "<td id='tdTeachertaskcompetencelinkage' class='center'><input type='button' id='buttonaddtaskcompetencelinkage' value='add' class='hover'></td></tr>"
+            html += "<tfoot>";
+            //*/
+            html+="</table>";
+            //right section end
+            html += "</div></td></tr></table>";
             document.getElementById('divTeacherRight').innerHTML = html;
+
+            var elements = document.getElementsByClassName('deletetaskcompetencelinkage');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    var index = this.id.substring(28, this.id.length);
+                    var edge = new competenceweight();
+                    edge.fromname = document.getElementById('tdTeacherCstructureFrom' + index).innerHTML;
+                    edge.toname = document.getElementById('tdTeacherCstructureTo' + index).innerHTML;
+                    edge.weight = document.getElementById('tdTeacherCstructureWeight' + index).innerHTML;
+                    edge.cstructurename = document.getElementById('addEntityName').value;
+                    deleteEntity(sessionInformation.username, sessionInformation.password, edge);
+                }
+            }
             break;
         case "thTeacherCreatedTasks":
             for (var i = 0; i < session.user.user.createdtasks.length; i++) {
