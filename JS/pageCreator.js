@@ -607,10 +607,9 @@ function loadTeacherEntityInfo(name, session) {
                     } else {
                         if (linkagecc.cstructurename == "&nbsp; &nbsp; &nbsp; - &nbsp; &nbsp; &nbsp;") {
                             linkagecc.cstructurename = null;
-                            deleteEntity(sessionInformation.username, sessionInformation.password, linkagecc)
+                            deleteEntity(sessionInformation.username, sessionInformation.password, linkagecc);
                         } else {
-                            //change
-                            alert("change linkage to be added!");
+                            updateEntity(sessionInformation.username, sessionInformation.password, linkagecc);
                         }
                     }
                 }

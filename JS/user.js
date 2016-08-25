@@ -43,7 +43,7 @@ function TheUser(xml) {
         str += "</loginxml>";
         return str;
     };
-    this.addElement = function (unit,xml) {
+    this.addElement = function (entity, xml) {
         if (this.usergroup == 2) {
             //teacher add element
             var elements = document.getElementsByClassName("thTeacherScroll");
@@ -61,34 +61,34 @@ function TheUser(xml) {
 
             switch (type) {
                 case "class":
-                    this.user.createdclasses.push(unit);
+                    this.user.createdclasses.push(entity);
                     document.getElementById(chosenId).click();
                     break;
                 case "user":
-                    this.user.createdstudents.push(unit);
+                    this.user.createdstudents.push(entity);
                     document.getElementById(chosenId).click();
                     break;
                 case "competence":
-                    this.user.createdcompetences.push(unit);
+                    this.user.createdcompetences.push(entity);
                     document.getElementById(chosenId).click();
                     break;
                 case "competencestructure":
-                    this.user.createdcstructures.push(unit);
+                    this.user.createdcstructures.push(entity);
                     document.getElementById(chosenId).click();
                     break;
                 case "task":
-                    this.user.createdtasks.push(unit);
+                    this.user.createdtasks.push(entity);
                     document.getElementById(chosenId).click();
                     break;
                 case "linkagetaskcompetence":
                     var task;
                     for (var i = 0; i < this.user.createdtasks.length; i++) {
-                        if (unit.taskname == this.user.createdtasks[i].name) {
+                        if (entity.taskname == this.user.createdtasks[i].name) {
                             task = this.user.createdtasks[i];
                             break;
                         }
                     }
-                    task.competencelinks.push(unit);
+                    task.competencelinks.push(entity);
 
                     //find taskid selected
                     var elements = document.getElementsByClassName("tdTeacherCreatedTasks");
@@ -108,23 +108,23 @@ function TheUser(xml) {
                 case "linkageclasscstructure":
                     var clazzToChange;
                     for (var i = 0; i < this.user.createdclasses.length; i++) {
-                        if (this.user.createdclasses[i].name == unit.classname) {
+                        if (this.user.createdclasses[i].name == entity.classname) {
                             clazzToChange = this.user.createdclasses[i];
                             break;
                         }
                     }
-                    clazzToChange.cstructure = unit.cstructurename;
+                    clazzToChange.cstructure = entity.cstructurename;
                     document.getElementById('buttondropdown2').innerHTML = clazzToChange.cstructure;
                     break;
                 case "linkageclasstask":
                     var clazzToChange;
                     for (var i = 0; i < this.user.createdclasses.length; i++) {
-                        if (this.user.createdclasses[i].name == unit.classname) {
+                        if (this.user.createdclasses[i].name == entity.classname) {
                             clazzToChange = this.user.createdclasses[i];
                             break;
                         }
                     }
-                    clazzToChange.tasks.push(unit.taskname);
+                    clazzToChange.tasks.push(entity.taskname);
 
                     //find classid selected
                     var elements = document.getElementsByClassName("tdTeacherCreatedClasses");
@@ -140,6 +140,9 @@ function TheUser(xml) {
 
                     document.getElementById(chosenId).click();
                     document.getElementById(chosenId2).click();
+                    break;
+                default:
+                    alert("Add for this element not implemented!");
                     break;
             }
 
@@ -281,10 +284,55 @@ function TheUser(xml) {
                     document.getElementById(chosenId).click();
                     document.getElementById(chosenId2).click();
                     break;
+                default:
+                    alert("Delete for this element not implemented!");
+                    break;
             }
 
         } else {
             alert("Usergroup - deleteElement not implemented");
+        }
+    };
+    this.updateElement = function (entity, xml) {
+        if (this.usergroup == 2) {
+            //teacher add element
+            var elements = document.getElementsByClassName("thTeacherScroll");
+            var chosenId = -1;
+            //find selected item
+            for (var i = 0; i < elements.length; i++) {
+                var classes = elements[i].className.split(" ");
+                if (classes.indexOf("divChosen") > -1) {
+                    chosenId = elements[i].id;
+                    break;
+                }
+            }
+
+            var type = this.getParser(xml).getElementsByTagName("type")[0].childNodes[0].nodeValue;
+
+            switch (type) {
+                case "linkageclasscstructure":
+                    var clazzToChange;
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == entity.classname) {
+                            clazzToChange = this.user.createdclasses[i];
+                            break;
+                        }
+                    }
+                    clazzToChange.cstructure = entity.cstructurename;
+                    document.getElementById('buttondropdown2').innerHTML = clazzToChange.cstructure;
+                    break;
+                default:
+                    alert("Update for this element not implemented!");
+                    break;
+            }
+
+            //alert(chosenId + unit.name);
+
+            //set new view
+            //if (document.getElementById('tdTeacherEntities+') != null)
+            //    document.getElementById('tdTeacherEntities+').click();
+        } else {
+            alert("Usergroup - addElement not implemented");
         }
     };
 }

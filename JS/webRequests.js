@@ -114,3 +114,32 @@
       sessionInformation.submittedEntity = entity;
       xmlhttp.send(entity.toDBEntityXML());
   }
+
+  function updateEntity(username, password, entity) {
+      var url = "http://192.168.178.51:8080/test2/rest/updateEntity" + "?name=" + username + "&password=" + password;
+
+      //alert(xml);
+
+      // send xml string
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+          //alert ("onreadystatechange: state: " + xmlhttp.readyState + ", status: " + xmlhttp.status);
+          if (xmlhttp.readyState == 4) {
+              var resultvalue = xmlhttp.responseText;
+              if (resultvalue.indexOf("success") > 0) {
+                  //store data in local storage
+                  sessionInformation.user.updateElement(sessionInformation.submittedEntity, resultvalue);
+              } else if (resultvalue.indexOf("failure") > 0) {
+                  alert("There was an Error!");
+                  //add error codes
+              } else {
+                  alert("Server not reached!");
+              }
+          }
+      }
+
+      xmlhttp.open("POST", url, true);
+      xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
+      sessionInformation.submittedEntity = entity;
+      xmlhttp.send(entity.toDBEntityXML());
+  }
