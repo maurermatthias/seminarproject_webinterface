@@ -247,13 +247,13 @@ function loadScrollingForTeacher(id, session) {
     html += "<th id='thTeacherVisibleCstructures' class='hover thTeacherScroll'>Visible C.-Structures</th></tr>";
     html += "<tr><th id='thTeacherCreatedTasks' class='hover thTeacherScroll'>Created Tasks</th>";
     html += "<th id='thTeacherVisibleTasks' class='hover thTeacherScroll'>Visible Tasks</th></tr>";
-    html += "</thead>";
+    html += "</thead><tbody>";
     html += "  <tr><td colspan='2' id='tdTeacherEntities+' class='tdTeacherCreatedStudents center hover'>+</td></tr>"
     var entities = session.user.user.createdstudents;
     for (var i = 0; i < entities.length; i++) {
         html += "  <tr><td colspan='2' id='tdTeacherEntities" + i + "' class='tdTeacherCreatedStudents tdTeacherScroll hover'>" + entities[i].name + "</td></tr>"
     }
-    html += "</table>";
+    html += "</tbody></table>";
     document.getElementById(id).innerHTML = html;
     setTeacherEntityClickListener(session);
     setTeacherEntityAddListener(session);
@@ -516,6 +516,9 @@ function loadTeacherEntityInfo(name, session) {
                     break;
                 }
             }
+            html += "<table class='fullTable'><colgroup><col span='1' id='colTeacherClassLeft'><col span='1' id='colTeacherClassRight'></colgroup>";
+            html += "<tr class='fullTr'><td id='tdTeacherClassLeft'><div id='divTeacherClassLeft'>";
+            //middle section start
             html += "<h3>Created Class</h3>";
             html += "<p>Name: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
@@ -548,13 +551,92 @@ function loadTeacherEntityInfo(name, session) {
             html += "</div></div></p>";
             //end dropdown
             html += "<input type='button' id='deleteEntity' value='Delete'>";
+            //middle section end
+            html += "</td><td id='tdTeacherTaskRight'><div id='divTeacherTaskRight'>";
+            //right section start
+            html += "<table id='tableTeacherClassTaskLink' class='scroll' width='100%'>";
+            html += "  <thead><tr><th colspan='2'> Task links </th></tr>";
+            html += "</thead><tbody>";
+            var alreadyLinkedTasks = new Array();
+            var links = unit.tasks;
+            for (var i = 0; i < links.length; i++) {
+                alreadyLinkedTasks.push(links[i]);
+                html += "  <tr><td id='tdTeacherClassLink" + i + "'>" + links[i] + "</td><td id='deletetaskclasslinkage-" + links[i] + "' class='center hover deletetaskclasslinkage'>-</td></tr>"
+            }
+            html += "</tbody><tfoot><tr><td id='tdTeacherClassLink+' class='center hover'>";
+            html += "<div id='dropdowntaskclasslinkage' class='dropdown'>";
+            html += "<button onclick='dropdownFunction3()' class='dropbtn' id='buttondropdown'>Add task</button>";
+            html += "<div id='myDropdown3' class='dropdown-content'>";
+            var strings = new Array();
+            for (var i = 0; i < session.user.user.createdtasks.length; i++) {
+                if (strings.indexOf(session.user.user.createdtasks[i].name) == -1 && alreadyLinkedTasks.indexOf(session.user.user.createdtasks[i].name) == -1) {
+                    strings.push(session.user.user.createdtasks[i].name);
+                }
+            }
+            for (var i = 0; i < session.user.user.visibletasks.length; i++) {
+                if (strings.indexOf(session.user.user.visibletasks[i].name) == -1 && alreadyLinkedTasks.indexOf(session.user.user.visibletasks[i].name) == -1) {
+                    strings.push(session.user.user.visibletasks[i].name);
+                }
+            }
+            for (var i = 0; i < strings.length; i++) {
+                html += "<a href='#' id='dropdownlinkagetaskclass-" + strings[i] + "' class='dropdowntask'>" + strings[i] + "</a>";
+            }
+            html += "</div>";
+            html += "</div>";
+            html += "</td>";
+            html += "<td id='tdTeachertaskclasslinkage' class='center'><input type='button' id='buttonaddtaskclasslinkage' value='add' class='hover'></td></tr>"
+            html += "<tfoot></table>";
+            //right section end
+            html += "</div></td></tr></table>";
             document.getElementById('divTeacherRight').innerHTML = html;
+
+            //callbacks middle section
             var elements = document.getElementsByClassName('dropdowncstructure');
             for (var i = 0; i < elements.length; i++) {
                 elements[i].onclick = function () {
-                    //submit changes -> set value afterwards
-                    document.getElementById('buttondropdown2').innerHTML = this.innerHTML;
+                    var before = document.getElementById('buttondropdown2').innerHTML;
+                    var linkagecc = new linkageclasscstructure();
+                    linkagecc.classname = document.getElementById('viewEntityName').value;
+                    linkagecc.cstructurename = this.innerHTML;
+                    //no changes
+                    if (before == linkagecc.cstructurename)
+                        return;
+                    if (before == "&nbsp; &nbsp; &nbsp; - &nbsp; &nbsp; &nbsp;") {
+                        //post
+                        postEntity(sessionInformation.username, sessionInformation.password, linkagecc);
+                    } else {
+                        if (linkagecc.cstructurename == "&nbsp; &nbsp; &nbsp; - &nbsp; &nbsp; &nbsp;") {
+                            linkagecc.cstructurename = null;
+                            deleteEntity(sessionInformation.username, sessionInformation.password, linkagecc)
+                        } else {
+                            //change
+                            alert("change linkage to be added!");
+                        }
+                    }
                 }
+            }
+
+            //callbacks right section
+            var elements = document.getElementsByClassName('deletetaskclasslinkage');
+            for (var i = 0; i < elements.length;i++){
+                elements[i].onclick = function () {
+                    var link = new linkageclasstask();
+                    link.classname = document.getElementById('viewEntityName').value;
+                    link.taskname = this.id.substring(23, this.id.length);
+                    deleteEntity(sessionInformation.username, sessionInformation.password, link);
+                }
+            }
+            var elements = document.getElementsByClassName('dropdowntask');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    document.getElementById('buttondropdown').innerHTML = this.innerHTML;
+                }
+            }
+            document.getElementById('buttonaddtaskclasslinkage').onclick = function () {
+                var link = new linkageclasstask();
+                link.classname = document.getElementById('viewEntityName').value;
+                link.taskname = document.getElementById('buttondropdown').innerHTML;
+                postEntity(sessionInformation.username, sessionInformation.password, link);
             }
             break;
         case "thTeacherCreatedStudents":
@@ -622,14 +704,14 @@ function loadTeacherEntityInfo(name, session) {
             ///*
             html += "<table id='tableTeacherTaskLink' class='scroll' width='100%'>";
             html += "  <thead><tr><th colspan='3'> Competence links </th></tr>";
-            html += "</thead>";
+            html += "</thead><tbody>";
             var alreadyLinkedCompetences = new Array();
             var links = unit.competencelinks;
             for (var i = 0; i < links.length; i++) {
                 alreadyLinkedCompetences.push(links[i].competencename);
                 html += "  <tr><td id='tdTeacherTaskLink" + i + "'>" + links[i].competencename + "</td><td id='tdTeacherTaskLink" + i + "'>" + links[i].weight + "</td><td id='deletetaskcompetencelinkage-" + links[i].competencename + "' class='center hover deletetaskcompetencelinkage'>-</td></tr>"
             }
-            html += "<tfoot><tr><td id='tdTeacherTaskLink+' class='center hover'>";
+            html += "</tbody><tfoot><tr><td id='tdTeacherTaskLink+' class='center hover'>";
             html += "<div id='dropdowntaskcompetencelinkage' class='dropdown'>";
             html += "<button onclick='dropdownFunction()' class='dropbtn' id='buttondropdown'>Add competence</button>";
             html += "<div id='myDropdown' class='dropdown-content'>";
@@ -640,7 +722,7 @@ function loadTeacherEntityInfo(name, session) {
                 }
             }
             for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
-                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1) {
+                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.visiblecompetences[i].name) == -1) {
                     strings.push(session.user.user.visiblecompetences[i].name);
                 }
             }
@@ -698,7 +780,7 @@ function loadTeacherEntityInfo(name, session) {
                         }
                     }
                     entityToDelete.taskname = name;
-                    deleteEntity(sessionInformation.username, sessionInformation.password, "linkagetaskcompetence", entityToDelete);
+                    deleteEntity(sessionInformation.username, sessionInformation.password, entityToDelete);
                 }
             }
 
@@ -775,7 +857,6 @@ function setTeacherEntityDeleteListener(session) {
             }
 
 
-            var xml = "";
             var unit = null;
             switch (chosenId) {
                 case "thTeacherCreatedClasses":
@@ -785,7 +866,6 @@ function setTeacherEntityDeleteListener(session) {
                             break;
                         }
                     }
-                    xml += "class";
                     break;
                 case "thTeacherCreatedStudents":
                     for (var i = 0; i < sessionInformation.user.user.createdstudents.length; i++) {
@@ -794,7 +874,6 @@ function setTeacherEntityDeleteListener(session) {
                             break;
                         }
                     }
-                    xml += "user";
                     break;
                 case "thTeacherCreatedCompetences":
                     for (var i = 0; i < sessionInformation.user.user.createdcompetences.length; i++) {
@@ -803,7 +882,6 @@ function setTeacherEntityDeleteListener(session) {
                             break;
                         }
                     }
-                    xml += "competence";
                     break;
                 case "thTeacherCreatedCstructures":
                     for (var i = 0; i < sessionInformation.user.user.createdcstructures.length; i++) {
@@ -812,7 +890,6 @@ function setTeacherEntityDeleteListener(session) {
                             break;
                         }
                     }
-                    xml += "competencestructure";
                     break;
                 case "thTeacherCreatedTasks":
                     for (var i = 0; i < sessionInformation.user.user.createdtasks.length; i++) {
@@ -821,11 +898,10 @@ function setTeacherEntityDeleteListener(session) {
                             break;
                         }
                     }
-                    xml += "task";
                     break;
             }
             //alert(unit.visibility);
-            deleteEntity(sessionInformation.username, sessionInformation.password, xml, unit);
+            deleteEntity(sessionInformation.username, sessionInformation.password, unit);
         }
     }
 }

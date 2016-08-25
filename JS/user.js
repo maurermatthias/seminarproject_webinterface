@@ -43,7 +43,7 @@ function TheUser(xml) {
         str += "</loginxml>";
         return str;
     };
-    this.addElement = function (unit) {
+    this.addElement = function (unit,xml) {
         if (this.usergroup == 2) {
             //teacher add element
             var elements = document.getElementsByClassName("thTeacherScroll");
@@ -57,60 +57,89 @@ function TheUser(xml) {
                 }
             }
 
-            switch (chosenId) {
-                case "thTeacherCreatedClasses":
+            var type = this.getParser(xml).getElementsByTagName("type")[0].childNodes[0].nodeValue;
+
+            switch (type) {
+                case "class":
                     this.user.createdclasses.push(unit);
                     document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedStudents":
+                case "user":
                     this.user.createdstudents.push(unit);
                     document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedCompetences":
+                case "competence":
                     this.user.createdcompetences.push(unit);
                     document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedCstructures":
+                case "competencestructure":
                     this.user.createdcstructures.push(unit);
                     document.getElementById(chosenId).click();
                     break;
-                case "thTeacherCreatedTasks":
-                    var button = document.getElementById('buttonaddtaskcompetencelinkage');
-                    if (button = null) {
-                        this.user.createdtasks.push(unit);
-                        document.getElementById(chosenId).click();
-                    }
-                    else {
-                        var task;
-                        for (var i = 0; i < this.user.createdtasks.length; i++) {
-                            if (unit.taskname == this.user.createdtasks[i].name) {
-                                task = this.user.createdtasks[i];
-                                break;
-                            }
+                case "task":
+                    this.user.createdtasks.push(unit);
+                    document.getElementById(chosenId).click();
+                    break;
+                case "linkagetaskcompetence":
+                    var task;
+                    for (var i = 0; i < this.user.createdtasks.length; i++) {
+                        if (unit.taskname == this.user.createdtasks[i].name) {
+                            task = this.user.createdtasks[i];
+                            break;
                         }
-                        task.competencelinks.push(unit);
-
-                        //find taskid selected
-                        var elements = document.getElementsByClassName("tdTeacherCreatedTasks");
-                        var chosenId2 = -1;
-                        //find selected item
-                        for (var i = 0; i < elements.length; i++) {
-                            var classes = elements[i].className.split(" ");
-                            if (classes.indexOf("divChosen") > -1) {
-                                chosenId2 = elements[i].id;
-                                break;
-                            }
-                        }
-
-                        document.getElementById(chosenId).click();
-                        document.getElementById(chosenId2).click();
                     }
+                    task.competencelinks.push(unit);
+
+                    //find taskid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedTasks");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
                     break;
-                case "thTeacherVisibleCompetences":
+                case "linkageclasscstructure":
+                    var clazzToChange;
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == unit.classname) {
+                            clazzToChange = this.user.createdclasses[i];
+                            break;
+                        }
+                    }
+                    clazzToChange.cstructure = unit.cstructurename;
+                    document.getElementById('buttondropdown2').innerHTML = clazzToChange.cstructure;
                     break;
-                case "thTeacherVisibleCstructures":
-                    break;
-                case "thTeacherVisibleTasks":
+                case "linkageclasstask":
+                    var clazzToChange;
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == unit.classname) {
+                            clazzToChange = this.user.createdclasses[i];
+                            break;
+                        }
+                    }
+                    clazzToChange.tasks.push(unit.taskname);
+
+                    //find classid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedClasses");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
                     break;
             }
 
@@ -213,6 +242,42 @@ function TheUser(xml) {
                             break;
                         }
                     }
+                    document.getElementById(chosenId).click();
+                    document.getElementById(chosenId2).click();
+                    break;
+                case "linkageclasscstructure":
+                    var clazzToChange;
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == entity.classname) {
+                            clazzToChange = this.user.createdclasses[i];
+                            break;
+                        }
+                    }
+                    clazzToChange.cstructure = null;
+                    document.getElementById('buttondropdown2').innerHTML = "&nbsp; &nbsp; &nbsp; - &nbsp; &nbsp; &nbsp;";
+                    break;
+                case "linkageclasstask":
+                    var clazzToChange;
+                    for (var i = 0; i < this.user.createdclasses.length; i++) {
+                        if (this.user.createdclasses[i].name == entity.classname) {
+                            clazzToChange = this.user.createdclasses[i];
+                            break;
+                        }
+                    }
+                    clazzToChange.tasks.splice(clazzToChange.tasks.indexOf(entity.taskname),1);
+
+                    //find classid selected
+                    var elements = document.getElementsByClassName("tdTeacherCreatedClasses");
+                    var chosenId2 = -1;
+                    //find selected item
+                    for (var i = 0; i < elements.length; i++) {
+                        var classes = elements[i].className.split(" ");
+                        if (classes.indexOf("divChosen") > -1) {
+                            chosenId2 = elements[i].id;
+                            break;
+                        }
+                    }
+
                     document.getElementById(chosenId).click();
                     document.getElementById(chosenId2).click();
                     break;
@@ -529,6 +594,7 @@ function clazz(parser) {
     this.description;
     this.id;
     this.cstructure;
+    this.tasks = new Array();
     this.fillClass = function (parser) {
         if (parser === undefined)
             return;
@@ -538,6 +604,11 @@ function clazz(parser) {
         this.id = parser.getElementsByTagName("id")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("competencestructure").length >0)
             this.cstructure = parser.getElementsByTagName("competencestructure")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("task").length > 0) {
+            for (var i = 0; i < parser.getElementsByTagName("task").length;i++){
+                this.tasks.push(parser.getElementsByTagName("task")[i].childNodes[0].nodeValue);
+            }
+        }
     }
     this.fillClass(parser);
     this.toXML = function () {
@@ -556,6 +627,50 @@ function clazz(parser) {
         xml += "</entity>";
         return xml;
     };
+}
+
+function linkageclasscstructure() {
+    this.classname;
+    this.cstructurename;
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>linkageclasscstructure</type>";
+        xml += "<classname>" + this.classname + "</classname>";
+        if (this.cstructurename != null)
+            xml += "<cstructurename>" + this.cstructurename + "</cstructurename>";
+        xml += "</entity>";
+        return xml;
+    };
+    this.toXML = function () {
+        var xml = "<linkageclasscstructure>";
+        xml += "<classname>" + this.classname + "</classname>";
+        if (this.cstructurename != null)
+            xml += "<cstructurename>" + this.cstructurename + "</cstructurename>";
+        xml += "</linkageclasscstructure>";
+        return xml;
+    }
+}
+
+function linkageclasstask() {
+    this.classname;
+    this.taskname;
+    this.toDBEntityXML = function () {
+        var xml = "<entity>";
+        xml += "<type>linkageclasstask</type>";
+        xml += "<classname>" + this.classname + "</classname>";
+        if (this.taskname != null)
+            xml += "<taskname>" + this.taskname + "</taskname>";
+        xml += "</entity>";
+        return xml;
+    };
+    this.toXML = function () {
+        var xml = "<linkageclasstask>";
+        xml += "<classname>" + this.classname + "</classname>";
+        if (this.taskname != null)
+            xml += "<taskname>" + this.taskname + "</taskname>";
+        xml += "</linkageclasstask>";
+        return xml;
+    }
 }
 
 function user(parser) {

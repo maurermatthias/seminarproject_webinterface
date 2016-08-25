@@ -228,3 +228,17 @@ body{
 #dropdowntaskcompetencelinkage{
     text-align: left;
 }
+#divTeacherClassLeft{
+    height:100%;
+    margin:10px;
+}
+#divTeacherClassRight{
+    height:100%;
+    margin:10px;
+}
+#colTeacherClassLeft{
+    width:50%;
+}
+#colTeacherClassRight{
+    width:50%;
+}

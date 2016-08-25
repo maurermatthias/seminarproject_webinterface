@@ -66,7 +66,7 @@
               var resultvalue = xmlhttp.responseText;
               if (resultvalue.indexOf("success") > 0) {
                   //store data in local storage
-                  sessionInformation.user.addElement(sessionInformation.submittedEntity);
+                  sessionInformation.user.addElement(sessionInformation.submittedEntity, resultvalue);
               } else if (resultvalue.indexOf("failure") > 0) {
                   alert("There was an Error!");
                   //add error codes
@@ -82,8 +82,8 @@
       xmlhttp.send(entity.toDBEntityXML());
   }
 
-  function deleteEntity(username, password, xmltype, entity) {
-      var xml = "<delete><type>" + xmltype + "</type>" + entity.toXML() + "</delete>";
+  function deleteEntity(username, password, entity) {
+      //var xml = "<delete><type>" + xmltype + "</type>" + entity.toXML() + "</delete>";
       var url = "http://192.168.178.51:8080/test2/rest/deleteEntity" + "?name=" + username + "&password=" + password;
 
       //alert(xml);
@@ -96,7 +96,7 @@
               var resultvalue = xmlhttp.responseText;
               if (resultvalue.indexOf("success") > 0) {
                   //store data in local storage
-                  sessionInformation.user.deleteElement(entity, resultvalue);
+                  sessionInformation.user.deleteElement(sessionInformation.submittedEntity, resultvalue);
                   //set new view
                   //if (document.getElementById('tdTeacherEntities+') != null)
                   //    document.getElementById('tdTeacherEntities+').click();
@@ -112,5 +112,5 @@
       xmlhttp.open("POST", url, true);
       xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
       sessionInformation.submittedEntity = entity;
-      xmlhttp.send(xml);
+      xmlhttp.send(entity.toDBEntityXML());
   }
