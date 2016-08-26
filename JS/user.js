@@ -944,3 +944,16 @@ function studentregistration() {
         return xml;
     };
 }
+
+function taskanswer() {
+    this.id;
+    this.answer;
+    this.toXML = function(){
+        var xml = "<taskanswer>";
+        xml += "<answer>" + this.answer + "</answer>";
+        xml += "<id>" + this.id + "</id>";
+        xml += "</taskanswer>";
+        return xml;
+    };
+
+}

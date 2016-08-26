@@ -5,7 +5,7 @@ function loadPage(session) {
         loadLoginPageMenu(idMenu, session);
         loadLoginPageContent(idContent, session);
         //tmp: login
-        sessionInformation.login("teacher1", "teacher1");
+        sessionInformation.login("student1", "student1");
     }
     else {
         if (session.user.usergroup == 0) {
@@ -89,12 +89,12 @@ function loadStartPageContentStudent(id, session) {
 function loadScrollingClasses(id, session) {
     var html = "<table id='tableStudentClass' class='scroll'  width='100%'>";
     html += "  <thead><tr><th id='thStudentClassRegistered' class='hover thStudentClass'>Registered</th>";
-    html += "<th id='thStudentClassAvailable' class='hover divChosen thStudentClass'>Available</th></tr></thead>";
+    html += "<th id='thStudentClassAvailable' class='hover divChosen thStudentClass'>Available</th></tr></thead><tbody>";
     var classes = session.user.user.availableclasses;
     for (var i = 0; i < classes.length; i++) {
         html += "  <tr><td colspan='2' id='tdStudentClass" + i + "' class='tdStudentClass hover'>" + classes[i].name + "</td></tr>"
     }
-    html += "</table>";
+    html += "</tbody></table>";
     document.getElementById(id).innerHTML = html;
     setStudentClassClickListener(session);
 
@@ -210,8 +210,9 @@ function loadStudentClassInfo(classname, session) {
             }
         }
     }
-
-    var html = "<div id='divStudentClass'>";
+    var html = "<table class='fullTable'><colgroup><col span='1' id='colStudentClassLeft'><col span='1' id='colStudentClassRight'></colgroup>";
+    html += "<tr class='fullTr'><td id='tdTeacherClassLeft'><div id='divStudentClassLeft'>";
+    //middle section start
     if (registeredForClass) {
         html += "<h3>Registered Class</h3>";
     } else {
@@ -226,8 +227,14 @@ function loadStudentClassInfo(classname, session) {
         html += "Register";
     }
     html += "'></p>";
-
-    html += "<div>";
+    if (registeredForClass) {
+        html += "<p><input type='button' value='Continue' id='buttonStudentContinueClass'></p>";
+    }
+    //middle section end
+    html += "</div></td><td id='tdTeacherClassRight'><div id='divStudentClassRight'>";
+    //right section start
+    //right section end
+    html += "</div></td></tr></table>";
     document.getElementById('divStudentRight').innerHTML = html;
 
     document.getElementById('studentButtonRegister').onclick = function () {
@@ -240,6 +247,18 @@ function loadStudentClassInfo(classname, session) {
             deleteEntity(sessionInformation.username, sessionInformation.password, entity);
         } else {
             alert("Line should not be reached!");
+        }
+    }
+
+    var element = document.getElementById('buttonStudentContinueClass');
+    if (element != null) {
+        element.onclick = function () {
+            var clazzname = document.getElementById('viewEntityName').value;
+            var html = "<h3 id='nextTaskHeading'>" + clazzname + "</h3>";
+            html += "<p>Question:</p> <textarea rows='7' cols='50' id='getNextTaskQuestion' readonly></textarea >";
+            html += "<p><input type='text' id='getNextTaskAnswer' size='50'><input type='button' class='getNextTaskSubmit' value='Submit'></p>";
+            document.getElementById('divStudentClassRight').innerHTML = html;
+            getNextTask(sessionInformation.username, sessionInformation.password,clazzname);
         }
     }
 }

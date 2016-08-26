@@ -185,6 +185,20 @@ body{
 #colStudentRight{
     width:70%;
 }
+#colStudentClassLeft{
+    width:50%;
+}
+#colStudentClassRight{
+    width:50%;
+}
+#divStudentClassLeft{
+    height:100%;
+    margin:10px;
+}
+#divStudentClassRight{
+    height:100%;
+    margin:10px;
+}
 
 
 /*UNKNOWN*/
@@ -249,10 +263,10 @@ body{
     width:50%;
 }
 #divTeacherCstructureLeft{
-        height:100%;
+    height:100%;
     margin:10px;
 }
 #divTeacherCstructureRight{
-        height:100%;
+    height:100%;
     margin:10px;
 }
