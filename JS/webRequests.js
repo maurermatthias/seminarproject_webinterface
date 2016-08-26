@@ -185,8 +185,7 @@ function getNextTask(username, password, classname) {
                   var ans = new taskanswer();
                   ans.id = taskid;
                   ans.answer = answer;
-                  alert(ans.toXML());
-                  //do update
+                  updateCompetenceState(username, password,ans);
               }
           }
       }
@@ -194,4 +193,29 @@ function getNextTask(username, password, classname) {
       xmlhttp.setRequestHeader("content-type", "text/plain");
       xmlhttp.send();
       //*/
-  }
+}
+
+function updateCompetenceState(username, password,answer) {
+    var url = "http://192.168.178.51:8080/test2/rest/updateCompetencestate" + "?name=" + username + "&password=" + password;
+
+    // send xml string
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        //alert ("onreadystatechange: state: " + xmlhttp.readyState + ", status: " + xmlhttp.status);
+        if (xmlhttp.readyState == 4) {
+            var resultvalue = xmlhttp.responseText;
+            if (resultvalue.indexOf("success") > 0) {
+                alert("load now next question!");
+            } else if (resultvalue.indexOf("failure") > 0) {
+                alert("There was an Error!");
+                //add error codes
+            } else {
+                alert("Server not reached!");
+            }
+        }
+    }
+
+    xmlhttp.open("POST", url, true);
+    xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
+    xmlhttp.send(answer.toXML());
+}
