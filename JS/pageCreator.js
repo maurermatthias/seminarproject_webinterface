@@ -712,33 +712,42 @@ function loadTeacherEntityInfo(name, session) {
             var links = unit.weights;
             for (var i = 0; i < links.length; i++) {
                 html += "  <tr><td id='tdTeacherCstructureFrom" + i + "'>" + links[i].fromname + "</td><td id='tdTeacherCstructureTo" + i + "'>" + links[i].toname + "</td>";
-                html += "<td id='tdTeacherCstructureWeight" + i + "'>" + links[i].weight + "</td><td id='deletetaskcompetencelinkage-" + i+ "' class='center hover deletetaskcompetencelinkage'>-</td></tr>"
+                html += "<td id='tdTeacherCstructureWeight" + i + "' class='center'>" + links[i].weight + "</td><td id='deletetaskcompetencelinkage-" + i+ "' class='center hover deletetaskcompetencelinkage'>-</td></tr>"
             }
             html += "</tbody>";
-            /*
-            html+="<tfoot><tr><td id='tdTeacherTaskLink+' class='center hover'>";
-            html += "<div id='dropdowntaskcompetencelinkage' class='dropdown'>";
-            html += "<button onclick='dropdownFunction()' class='dropbtn' id='buttondropdown'>Add competence</button>";
-            html += "<div id='myDropdown' class='dropdown-content'>";
+            html += "<tfoot><tr><td id='tdTeacherTaskLink+' class='center'>";
+            ////left dropdown start
+            html += "<div id='dropdowncompetenceweightfrom' class='dropdown'>";
+            html += "<button onclick='dropdownFunction4()' class='dropbtn' id='buttondropdowncompetenceweightfrom'>From</button>";
+            html += "<div id='myDropdown4' class='dropdown-content'>";
             var strings = new Array();
             for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
-                if (strings.indexOf(session.user.user.createdcompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1) {
+                if (strings.indexOf(session.user.user.createdcompetences[i].name) == -1 ) {
                     strings.push(session.user.user.createdcompetences[i].name);
                 }
             }
             for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
-                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1 && alreadyLinkedCompetences.indexOf(session.user.user.visiblecompetences[i].name) == -1) {
+                if (strings.indexOf(session.user.user.visiblecompetences[i].name) == -1) {
                     strings.push(session.user.user.visiblecompetences[i].name);
                 }
             }
             for (var i = 0; i < strings.length; i++) {
-                html += "<a href='#' id='dropdownlinkagetaskcomnpetence-" + strings[i] + "' class='dropdowncompetence'>" + strings[i] + "</a>";
+                html += "<a href='#' id='dropdowncompetenceweightfrom-" + strings[i] + "' class='dropdowncompetencefrom'>" + strings[i] + "</a>";
             }
             html += "</div>";
             html += "</div>";
-            html += "</td><td>weight: &nbsp &nbsp <input type='text' id='linkagetaskcompetenceweight' class='center' size='6'></td>";
-            html += "<td id='tdTeachertaskcompetencelinkage' class='center'><input type='button' id='buttonaddtaskcompetencelinkage' value='add' class='hover'></td></tr>"
-            html += "<tfoot>";
+            /////feft dropdown end
+            html += "</td><td id='tdDropdowncompetenceweightto' class='center'>";
+            /*
+            html +="weight: &nbsp &nbsp <input type='text' id='linkagetaskcompetenceweight' class='center' size='6'>";
+            */
+            html += "</td><td id='tdTeachercstructureweight' class='center'>";
+            /*
+            
+            */
+            html += "</td><td class='center'>";
+            html += "<input type='button' id='buttonaddCompetenceWeight' value='add' class='hover center'>"
+            html += "</td></tr><tfoot>";
             //*/
             html+="</table>";
             //right section end
@@ -757,6 +766,92 @@ function loadTeacherEntityInfo(name, session) {
                     deleteEntity(sessionInformation.username, sessionInformation.password, edge);
                 }
             }
+
+            document.getElementById('buttonaddCompetenceWeight').onclick = function () {
+                var element = document.getElementById('inputTeachercstructureweight');
+                var competencefrom = document.getElementById('buttondropdowncompetenceweightfrom').innerHTML;
+                var weight;
+                if (element == null || competencefrom == "From" || document.getElementById('buttondropdowncompetenceweightto') == null) {
+                    alert("Pleas enter data first!");
+                    return;
+                }
+                var competenceto = document.getElementById('buttondropdowncompetenceweightto').innerHTML;
+                weight = document.getElementById('inputTeachercstructureweight').value;
+                if (weight == "" || competenceto == "To") {
+                    alert("Pleas enter data first!");
+                    return;
+                }
+                var cweight = new competenceweight();
+                cweight.fromname = competencefrom;
+                cweight.toname = competenceto;
+                cweight.weight = weight;
+                cweight.cstructurename = document.getElementById('addEntityName').value;
+                postEntity(sessionInformation.username, sessionInformation.password, cweight);
+            }
+
+            var elements = document.getElementsByClassName('dropdowncompetencefrom');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].onclick = function () {
+                    var competencename = this.innerHTML;
+                    document.getElementById('buttondropdowncompetenceweightfrom').innerHTML = competencename;
+                    //get possible to-competences
+                    //first-find cstructure
+                    var structure;
+                    var structname = document.getElementById('addEntityName').value;
+                    for (var i = 0; i < sessionInformation.user.user.createdcstructures.length; i++) {
+                        if (structname == sessionInformation.user.user.createdcstructures[i].name) {
+                            structure = sessionInformation.user.user.createdcstructures[i];
+                            break;
+                        }
+                    }
+                    //find already existent weights
+                    var notAllowedCompetences = new Array();
+                    for (var i = 0; i < structure.weights.length; i++) {
+                        if (structure.weights[i].fromname == competencename) {
+                            notAllowedCompetences.push(structure.weights[i].toname);
+                        }
+                    }
+                    var allowedCompetences = new Array();
+                    for (var i = 0; i < session.user.user.createdcompetences.length; i++) {
+                        if (allowedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1
+                            && notAllowedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1
+                            && session.user.user.createdcompetences[i].name != competencename) {
+                            allowedCompetences.push(session.user.user.createdcompetences[i].name);
+                        }
+                    }
+                    for (var i = 0; i < session.user.user.visiblecompetences.length; i++) {
+                        if (allowedCompetences.indexOf(session.user.user.visiblecompetences[i].name) == -1
+                            && notAllowedCompetences.indexOf(session.user.user.createdcompetences[i].name) == -1
+                            && session.user.user.createdcompetences[i].name != competencename) {
+                            allowedCompetences.push(session.user.user.visiblecompetences[i].name);
+                        }
+                    }
+                    var html = "";
+                    html += "<div id='dropdowncompetenceweightto' class='dropdown'>";
+                    html += "<button onclick='dropdownFunction5()' class='dropbtn' id='buttondropdowncompetenceweightto'>To</button>";
+                    html += "<div id='myDropdown5' class='dropdown-content'>";
+                    for (var i = 0; i < allowedCompetences.length; i++) {
+                        html += "<a href='#' id='dropdowncompetenceweightto-" + allowedCompetences[i] + "' class='dropdowncompetenceto'>" + allowedCompetences[i] + "</a>";
+                    }
+                    html += "</div></div>";
+                    document.getElementById('tdDropdowncompetenceweightto').innerHTML = html;
+
+                    var elements = document.getElementsByClassName('dropdowncompetenceto');
+                    for (var i = 0; i < elements.length; i++) {
+                        elements[i].onclick = function () {
+                            var competencename = this.innerHTML;
+                            document.getElementById('buttondropdowncompetenceweightto').innerHTML = competencename;
+                            if (document.getElementById('tdTeachercstructureweight').innerHTML != "") {
+                                return;
+                            }
+                            var html = "<input type='text' size='5' id='inputTeachercstructureweight' class='center' value=''>";
+                            document.getElementById('tdTeachercstructureweight').innerHTML = html;
+                        }
+                    }
+
+                }
+            }
+
             break;
         case "thTeacherCreatedTasks":
             for (var i = 0; i < session.user.user.createdtasks.length; i++) {
