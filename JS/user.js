@@ -796,6 +796,8 @@ function clazz(parser) {
     this.description;
     this.id;
     this.cstructure;
+    this.active;
+    this.date;
     this.tasks = new Array();
     this.fillClass = function (parser) {
         if (parser === undefined)
@@ -804,6 +806,10 @@ function clazz(parser) {
         this.name = parser.getElementsByTagName("name")[0].childNodes[0].nodeValue;
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
         this.id = parser.getElementsByTagName("id")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("active").length >0)
+            this.active = parser.getElementsByTagName("active")[0].childNodes[0].nodeValue == "true" ? true : false;
+        if (parser.getElementsByTagName("date").length > 0)
+            this.date = parser.getElementsByTagName("date")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("competencestructure").length >0)
             this.cstructure = parser.getElementsByTagName("competencestructure")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("task").length > 0) {

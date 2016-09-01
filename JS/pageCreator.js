@@ -111,7 +111,7 @@ function loadScrollingClasses(id, session) {
                     break;
                 }
             }
-            if (!(this.id == chosenId)) {
+            //if (!(this.id == chosenId)) {
                 //unselect old selected item
                 var pos = document.getElementById(chosenId).className.split(" ").indexOf("divChosen");
                 var newClassArray = document.getElementById(chosenId).className.split(" ");
@@ -120,7 +120,7 @@ function loadScrollingClasses(id, session) {
                 //select new item
                 this.className = this.className + " divChosen";
                 loadStudentClassInfo(null, session);
-            }
+            //}
             //delete all rows
             var table = document.getElementById('tableStudentClass');
             while (table.rows.length > 1) {
@@ -245,6 +245,7 @@ function loadStudentClassInfo(classname, session) {
             postEntity(sessionInformation.username, sessionInformation.password, entity);
         } else if (this.value == "Deregister") {
             deleteEntity(sessionInformation.username, sessionInformation.password, entity);
+            document.getElementById('thStudentClassRegistered').click();
         } else {
             alert("Line should not be reached!");
         }
@@ -591,6 +592,13 @@ function loadTeacherEntityInfo(name, session) {
             }
             html += "</div></div></p>";
             //end dropdown
+            html += "<p id='psetactive'>Active since: ";
+            html += "<div id='divactivesince'>";
+            if (unit.active)
+                html += unit.date;
+            else
+                html += " not active ";
+            html += "</div> <input type='button' id='setClassActive' value='Set Active' class='hover'> &nbsp; &nbsp; <input type='button' id='setClassInactive' value='Set Inactive' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
             //middle section end
             html += "</td><td id='tdTeacherTaskRight'><div id='divTeacherTaskRight'>";
@@ -632,6 +640,34 @@ function loadTeacherEntityInfo(name, session) {
             document.getElementById('divTeacherRight').innerHTML = html;
 
             //callbacks middle section
+            document.getElementById('setClassActive').onclick = function () {
+                var classname = document.getElementById('viewEntityName').value;
+                var clazze;
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (classname == sessionInformation.user.user.createdclasses[i].name) {
+                        clazze = sessionInformation.user.user.createdclasses[i];
+                        break;
+                    }
+                }
+                setClassActive(sessionInformation.username, sessionInformation.password, clazze);
+            }
+
+            document.getElementById('setClassInactive').onclick = function () {
+                if (document.getElementById('divactivesince').innerHTML == " not active ") {
+                    alert("Class is not active!");
+                    return;
+                }
+                var classname = document.getElementById('viewEntityName').value;
+                var clazze;
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (classname == sessionInformation.user.user.createdclasses[i].name) {
+                        clazze = sessionInformation.user.user.createdclasses[i];
+                        break;
+                    }
+                }
+                setClassInactive(sessionInformation.username, sessionInformation.password, clazze);
+            }
+
             var elements = document.getElementsByClassName('dropdowncstructure');
             for (var i = 0; i < elements.length; i++) {
                 elements[i].onclick = function () {

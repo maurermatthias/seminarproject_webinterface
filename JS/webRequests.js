@@ -152,6 +152,7 @@ function getNextTask(username, password, classname) {
       xmlhttp.onreadystatechange = function () {
           if (xmlhttp.readyState == 4) {
               var restultvalue = xmlhttp.responseText;
+              document.getElementById('getNextTaskAnswer').value = "";
               if (window.DOMParser) {
                   parser = new DOMParser();
                   xmlDoc = parser.parseFromString(restultvalue, "text/xml");
@@ -164,29 +165,43 @@ function getNextTask(username, password, classname) {
               }
               if (xmlDoc.getElementsByTagName("status").length != 0
                   && xmlDoc.getElementsByTagName("status")[0].childNodes[0].nodeValue == "failure") {
+                  //there was an error
                   alert("There was an error!");
-              } else {
-                  var question = xmlDoc.getElementsByTagName("question")[0].childNodes[0].nodeValue;
-                  document.getElementById('getNextTaskQuestion').innerHTML = question;
-                  var id = xmlDoc.getElementsByTagName("taskid")[0].childNodes[0].nodeValue;
-                  document.getElementsByClassName('getNextTaskSubmit')[0].id = "getNextTaskSubmit" + id;
+              } else if (xmlDoc.getElementsByTagName("status").length != 0
+                  && xmlDoc.getElementsByTagName("status")[0].childNodes[0].nodeValue == "success") {
+                  //there was no error
+                  var complete = xmlDoc.getElementsByTagName("complete")[0].childNodes[0].nodeValue == "true" ? true : false;
+                  if (complete) {
+                      //there is no next task
+                      document.getElementById('divStudentClassRight').innerHTML = "<h3>Completed Class!</h3>";
+                  } else {
+                      //there is a next task
+                      var question = xmlDoc.getElementsByTagName("question")[0].childNodes[0].nodeValue;
+                      document.getElementById('getNextTaskQuestion').innerHTML = question;
+                      var id = xmlDoc.getElementsByTagName("taskid")[0].childNodes[0].nodeValue;
+                      document.getElementsByClassName('getNextTaskSubmit')[0].id = "getNextTaskSubmit" + id;
+
+                      var element = document.getElementsByClassName('getNextTaskSubmit')[0];
+                      element.onclick = function () {
+                          if (document.getElementById('getNextTaskQuestion').innerHTML == "")
+                              return;
+                          var taskid = this.id.substring(17, this.id.length);
+                          var answer = document.getElementById('getNextTaskAnswer').value;
+                          if (answer == "") {
+                              alert("Please enter answer.");
+                              return;
+                          }
+                          var ans = new taskanswer();
+                          ans.id = taskid;
+                          ans.answer = answer;
+                          updateCompetenceState(username, password, ans);
+                      }
+                  }
+              }else{
+                  alert("Server not reached!");
               }
 
-              var element = document.getElementsByClassName('getNextTaskSubmit')[0];
-              element.onclick = function () {
-                  if (document.getElementById('getNextTaskQuestion').innerHTML == "") 
-                      return;
-                  var taskid = this.id.substring(17, this.id.length);
-                  var answer = document.getElementById('getNextTaskAnswer').value;
-                  if (answer == "") {
-                      alert("Please enter answer.");
-                      return;
-                  }
-                  var ans = new taskanswer();
-                  ans.id = taskid;
-                  ans.answer = answer;
-                  updateCompetenceState(username, password,ans);
-              }
+
           }
       }
       xmlhttp.open("GET", url, true);
@@ -205,7 +220,8 @@ function updateCompetenceState(username, password,answer) {
         if (xmlhttp.readyState == 4) {
             var resultvalue = xmlhttp.responseText;
             if (resultvalue.indexOf("success") > 0) {
-                alert("load now next question!");
+                var classname = document.getElementById('nextTaskHeading').innerHTML;
+                getNextTask(sessionInformation.username, sessionInformation.password, classname);
             } else if (resultvalue.indexOf("failure") > 0) {
                 alert("There was an Error!");
                 //add error codes
@@ -218,4 +234,64 @@ function updateCompetenceState(username, password,answer) {
     xmlhttp.open("POST", url, true);
     xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
     xmlhttp.send(answer.toXML());
+}
+
+function setClassActive(username, password, clazze) {
+    var url = "http://192.168.178.51:8080/test2/rest/setClassActive" + "?name=" + username + "&password=" + password;
+    var xml = "<setclassactive>" + clazze .name+ "</setclassactive>";
+
+    // send xml string
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        //alert ("onreadystatechange: state: " + xmlhttp.readyState + ", status: " + xmlhttp.status);
+        if (xmlhttp.readyState == 4) {
+            var resultvalue = xmlhttp.responseText;
+            if (resultvalue.indexOf("success") > 0) {
+                document.getElementById('divactivesince').innerHTML = " just now ";
+                sessionInformation.submittedEntity.date = " just now ";
+                sessionInformation.submittedEntity.active = true;
+            } else if (resultvalue.indexOf("failure") > 0) {
+                alert("There was an Error!");
+                //add error codes
+            } else {
+                alert("Server not reached!");
+            }
+            
+        }
+    }
+
+    xmlhttp.open("POST", url, true);
+    xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
+    sessionInformation.submittedEntity = clazze;
+    xmlhttp.send(xml);
+}
+
+function setClassInactive(username, password, clazze) {
+    var url = "http://192.168.178.51:8080/test2/rest/setClassInactive" + "?name=" + username + "&password=" + password;
+    var xml = "<setclassinactive>" + clazze.name + "</setclassinactive>";
+
+    // send xml string
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        //alert ("onreadystatechange: state: " + xmlhttp.readyState + ", status: " + xmlhttp.status);
+        if (xmlhttp.readyState == 4) {
+            var resultvalue = xmlhttp.responseText;
+            if (resultvalue.indexOf("success") > 0) {
+                document.getElementById('divactivesince').innerHTML = " not active ";
+                sessionInformation.submittedEntity.date = null;
+                sessionInformation.submittedEntity.active = false;
+            } else if (resultvalue.indexOf("failure") > 0) {
+                alert("There was an Error!");
+                //add error codes
+            } else {
+                alert("Server not reached!");
+            }
+
+        }
+    }
+
+    xmlhttp.open("POST", url, true);
+    xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
+    sessionInformation.submittedEntity = clazze;
+    xmlhttp.send(xml);
 }
