@@ -618,6 +618,7 @@ function task(parser) {
     this.description;
     this.text;
     this.answer;
+    this.authenticity;
     this.competencelinks = new Array();
     this.fillTask = function (parser) {
         if (parser === undefined)
@@ -626,6 +627,7 @@ function task(parser) {
         this.description = parser.getElementsByTagName("description")[0].childNodes[0].nodeValue;
         this.text = parser.getElementsByTagName("text")[0].childNodes[0].nodeValue;
         this.answer = parser.getElementsByTagName("answer")[0].childNodes[0].nodeValue;
+        this.authenticity = parser.getElementsByTagName("authenticity")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("competencelink").length > 0) {
             var links = parser.getElementsByTagName("competencelink");
             for (var i = 0; i < links.length; i++) {
@@ -640,6 +642,7 @@ function task(parser) {
         str += "<description>" + this.description + "</description>";
         str += "<text>" + this.text + "</text>";
         str += "<answer>" + this.answer + "</answer>";
+        str += "<authenticity>" + this.authenticity + "</authenticity>";
         if (this.competencelinks.length > 0) {
             str += "<competencelinks>";
             for (var i = 0; i < this.competencelinks.length; i++) {
@@ -649,7 +652,7 @@ function task(parser) {
         }
         str += "</task>";
         return str;
-    };
+    };   
     this.toDBEntityXML = function () {
         var xml = "<entity>";
         xml += "<type>task</type>";
@@ -658,6 +661,7 @@ function task(parser) {
         xml += "<visibility>" + this.visibility + "</visibility>";
         xml += "<text>" + this.text + "</text>";
         xml += "<answer>" + this.answer + "</answer>";
+        xml += "<authenticity>" + this.authenticity + "</authenticity>";
         xml += "</entity>";
         return xml;
     };

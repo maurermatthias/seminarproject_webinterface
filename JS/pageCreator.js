@@ -5,7 +5,7 @@ function loadPage(session) {
         loadLoginPageMenu(idMenu, session);
         loadLoginPageContent(idContent, session);
         //tmp: login
-        sessionInformation.login("student1", "student1");
+        sessionInformation.login("teacher1", "teacher1");
     }
     else {
         if (session.user.usergroup == 0) {
@@ -450,6 +450,7 @@ function setTeacherEntityAddListener(session) {
                     html += "<p>Description:</p> <textarea rows='7' cols='70' id='addEntityDescription'></textarea >";
                     html += "<p>Question:</p> <textarea rows='7' cols='70' id='addEntityQuestion'></textarea >";
                     html += "<p>Answer: <input type='text' id='addEntityAnswer'></p>";
+                    html += "<p>Authenticity: <input type='text' id='viewEntityAuthenticity' value='' size='4'></p>";
                     html += "<p>Visibile for all: <input type='checkbox' id='addEntityVisible' class='hover'></p>";
                     break;
             }
@@ -495,7 +496,8 @@ function setTeacherEntityAddListener(session) {
                         tas.text = document.getElementById('addEntityQuestion').value;
                         tas.answer = document.getElementById('addEntityAnswer').value;
                         tas.visibility = document.getElementById('addEntityVisible').checked ? "ALL" : "NOTALL";
-                        submittedEntity = task;
+                        tas.authenticity = document.getElementById('viewEntityAuthenticity').value;
+                        submittedEntity = tas;
                         break;
                 }
 
@@ -924,6 +926,7 @@ function loadTeacherEntityInfo(name, session) {
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion'>" + unit.text + "</textarea >";
             html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
+            html += "<p>Authenticity: <input type='text' id='viewEntityAuthenticity' value='" + unit.authenticity + "' size='4'></p>";
             html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             html += "<input type='button' id='deleteEntity' value='Delete'>";
             //middle section end
@@ -1051,6 +1054,7 @@ function loadTeacherEntityInfo(name, session) {
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Question:</p> <textarea rows='7' cols='70' id='viewEntityQuestion' >" + unit.text + "</textarea >";
             html += "<p>Answer: <input type='text' id='viewEntityAnswer' value='" + unit.answer + "'></p>";
+            html += "<p>Authenticity: <input type='text' id='viewEntityAuthenticity' value='" + unit.authenticity + "' size='4'></p>";
             html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
             document.getElementById('divTeacherRight').innerHTML = html;
             break;
