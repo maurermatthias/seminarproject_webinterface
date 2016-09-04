@@ -295,3 +295,51 @@ function setClassInactive(username, password, clazze) {
     sessionInformation.submittedEntity = clazze;
     xmlhttp.send(xml);
 }
+
+function changeUpdateProcedure(username, password, entity) {
+    var url = "http://192.168.178.51:8080/test2/rest/changeUpdateProcedure" + "?name=" + username + "&password=" + password;
+
+    // send xml string
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        //alert ("onreadystatechange: state: " + xmlhttp.readyState + ", status: " + xmlhttp.status);
+        if (xmlhttp.readyState == 4) {
+            var resultvalue = xmlhttp.responseText;
+            if (resultvalue.indexOf("success") > 0) {
+                //store data in local storage
+                var entity = sessionInformation.submittedEntity;
+                var unit;
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (sessionInformation.user.user.createdclasses[i].name == entity.classname)
+                        unit = sessionInformation.user.user.createdclasses[i];
+                }
+                unit.updateprocedure = entity.updateprocedure;
+                document.getElementById('updateprocedure' + unit.updateprocedure).checked = true;
+            } else if (resultvalue.indexOf("failure") > 0) {
+                var entity = sessionInformation.submittedEntity;
+                var unit;
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (sessionInformation.user.user.createdclasses[i].name == entity.classname)
+                        unit = sessionInformation.user.user.createdclasses[i];
+                }
+                document.getElementById('updateprocedure' + unit.updateprocedure).checked = true;
+                alert("There was an Error!");
+                //add error codes
+            } else {
+                var entity = sessionInformation.submittedEntity;
+                var unit;
+                for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                    if (sessionInformation.user.user.createdclasses[i].name == entity.classname)
+                        unit = sessionInformation.user.user.createdclasses[i];
+                }
+                document.getElementById('updateprocedure' + unit.updateprocedure).checked = true;
+                alert("Server not reached!");
+            }
+        }
+    }
+
+    xmlhttp.open("POST", url, true);
+    xmlhttp.setRequestHeader("content-type", "text/plain"); //application/x-www-form-urlencoded
+    sessionInformation.submittedEntity = entity;
+    xmlhttp.send(entity.toDBEntityXML());
+}

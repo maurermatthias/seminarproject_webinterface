@@ -802,6 +802,7 @@ function clazz(parser) {
     this.cstructure;
     this.active;
     this.date;
+    this.updateprocedure;
     this.tasks = new Array();
     this.fillClass = function (parser) {
         if (parser === undefined)
@@ -816,6 +817,8 @@ function clazz(parser) {
             this.date = parser.getElementsByTagName("date")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("competencestructure").length >0)
             this.cstructure = parser.getElementsByTagName("competencestructure")[0].childNodes[0].nodeValue;
+        if (parser.getElementsByTagName("updateprocedure").length > 0)
+            this.updateprocedure = parser.getElementsByTagName("updateprocedure")[0].childNodes[0].nodeValue;
         if (parser.getElementsByTagName("task").length > 0) {
             for (var i = 0; i < parser.getElementsByTagName("task").length;i++){
                 this.tasks.push(parser.getElementsByTagName("task")[i].childNodes[0].nodeValue);
@@ -836,6 +839,7 @@ function clazz(parser) {
         xml += "<name>" + this.name + "</name>";
         xml += "<description>" + this.description + "</description>";
         xml += "<visibility>" + this.visibility + "</visibility>";
+        xml += "<updateprocedure>" + this.updateprocedure + "</updateprocedure>";
         xml += "</entity>";
         return xml;
     };
@@ -966,4 +970,16 @@ function taskanswer() {
         return xml;
     };
 
+}
+
+function updateChange() {
+    this.classname;
+    this.updateprocedure;
+    this.toDBEntityXML = function () {
+        var xml = "<changeUpdateProcedure>";
+        xml += "<classname>" + this.classname + "</classname>";
+        xml += "<updateprocedure>" + this.updateprocedure + "</updateprocedure>";
+        xml += "</changeUpdateProcedure>";
+        return xml;
+    };
 }

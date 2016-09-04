@@ -567,6 +567,10 @@ function loadTeacherEntityInfo(name, session) {
             html += "<p>Name: <input type='text' id='viewEntityName' value='"+unit.name+"'></p>";
             html += "<p>Description:</p> <textarea rows='7' cols='70' id='viewEntityDescription'>" + unit.description + "</textarea >";
             html += "<p>Visibile for all: <input type='checkbox' id='viewEntityVisible' class='hover'></p>";
+
+            html += "<input type='radio' name='gender' value='SUR' id='updateprocedureSUR' class='updateprocedure hover'> SUR<br>";
+            html += "<input type='radio' name='gender' value='CCU' id='updateprocedureCCU' class='updateprocedure hover'> CCU";
+
             //start dropdown
             html += "<p>Linked to competence structure:";
             html += "<div id='dropdowntaskclasslinkage' class='dropdown center'>";
@@ -642,6 +646,32 @@ function loadTeacherEntityInfo(name, session) {
             document.getElementById('divTeacherRight').innerHTML = html;
 
             //callbacks middle section
+            var elements = document.getElementsByClassName('updateprocedure');
+            for (var i = 0; i < elements.length ; i++) {
+                elements[i].onclick = function () {
+                    var classname = document.getElementById('viewEntityName').value;
+                    var unit;
+                    for (var i = 0; i < sessionInformation.user.user.createdclasses.length; i++) {
+                        if (sessionInformation.user.user.createdclasses[i].name == classname)
+                            unit = sessionInformation.user.user.createdclasses[i];
+                    }
+                    var newValue = this.value;
+                    if (unit.updateprocedure == newValue)
+                        return;
+                    //postUpdateProcedureChange();
+                    var update = new updateChange();
+                    update.classname = classname;
+                    update.updateprocedure = newValue;
+                    changeUpdateProcedure(sessionInformation.username, sessionInformation.password, update);
+                }
+            }
+            
+            if (unit.updateprocedure == "CCU")
+                document.getElementById('updateprocedureCCU').checked = true;
+            else if (unit.updateprocedure == "SUR")
+                document.getElementById('updateprocedureSUR').checked = true;
+
+
             document.getElementById('setClassActive').onclick = function () {
                 var classname = document.getElementById('viewEntityName').value;
                 var clazze;
