@@ -267,18 +267,68 @@ function loadStudentClassInfo(classname, session) {
 
 //TEACHER
 
-function loadStartPageContentTeacher(id, session) {
-    var html = "<table class='fullTable'><colgroup><col span='1' id='colTeacherLeft'><col span='1' id='colTeacherRight'></colgroup>";
-    html += "<tr class='fullTr'><td id='tdTeacherLeft'><div id='divTeacherLeft'>";
-    html += "left";
-    html += "</div></td><td id='tdTeacherRight'><div id='divTeacherRight'>";
-    html += "right";
-    html += "</div></td></tr></table>";
+function loadStartPageMenuTeacher(id, session) {
+    var html = "<div id='buttonLogout' class='hover'>Logout</div>";
+    html += "<div id='menuButtonDiv'>";
+    html += "<div id='menu1' class='hover inline menuButton'>OLD</div>";
+    html += "<div id='menu2' class='hover inline menuButton'>MY ACTIVE CLASSES</div>";
+    html += "<div id='menu3' class='hover inline menuButton'>MY STUDENTS</div>";
+    html += "<div id='menu4' class='hover inline menuButton'>CREATE CLASS</div>";
+    html += "</div>";
     document.getElementById(id).innerHTML = html;
+    if (session.activeMenuId != null)
+        document.getElementById(session.activeMenuId).className += " menuButtonActive";
 
-    loadScrollingForTeacher("divTeacherLeft", session);
+    //logout button
+    document.getElementById('buttonLogout').onclick = function () {
+        sessionInformation.logout();
+    }
+
+    //menu buttons
+    var elements = document.getElementsByClassName('menuButton');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            setActiveButton(this, 'menuButton', 'menuButtonActive');
+            sessionInformation.activeMenuId = this.id;
+            loadPage(sessionInformation);
+            //set background color end
+        }
+    }
+
 }
 
+function loadStartPageContentTeacher(id, session) {
+    switch (session.activeMenuId) {
+        case "menu1":
+            var html = "<table class='fullTable'><colgroup><col span='1' id='colTeacherLeft'><col span='1' id='colTeacherRight'></colgroup>";
+            html += "<tr class='fullTr'><td id='tdTeacherLeft'><div id='divTeacherLeft'>";
+            html += "left";
+            html += "</div></td><td id='tdTeacherRight'><div id='divTeacherRight'>";
+            html += "right";
+            html += "</div></td></tr></table>";
+            document.getElementById(id).innerHTML = html;
+
+            loadScrollingForTeacher("divTeacherLeft", session);
+            break;
+        case "menu2":
+            var html = session.activeMenuId;
+            document.getElementById(id).innerHTML = html;
+            break;
+        case "menu3":
+            var html = session.activeMenuId;
+            document.getElementById(id).innerHTML = html;
+            break;
+        case "menu4":
+            createClassScreen(id,session);
+            break;
+        default:
+            var html = "";
+            document.getElementById(id).innerHTML = html;
+            break;
+    }
+
+}
+/// TEACHER - MENU1
 function loadScrollingForTeacher(id, session) {
     var html = "<table id='tableTeacherClass' class='scroll'  width='100%'>";
     html += "  <thead><tr><th id='thTeacherCreatedClasses' class='hover thTeacherScroll'>  Created Classes  </th>";
@@ -1167,14 +1217,113 @@ function setTeacherEntityDeleteListener(session) {
         }
     }
 }
+///TEACHER MENU 4
 
-function loadStartPageMenuTeacher(id, session) {
-    var html = "<div id='buttonLogout' class='hover'>Logout</div>";
+function createClassScreen(id,session) {
+    var html = "<table><tr><td><div id='createclassleft'>";
+    html += "</div></td>";
+    html += "<td><div id='createclassright'>";
+    html += "</div></td></tr></table>";
+    document.getElementById(id).innerHTML = html;
+    drawcreateclassleft('createclassleft', session);
+}
+
+function drawcreateclassleft(id,session) {
+    var html = "<table>";
+    html += "<tr><td id='createclassbasicinformation' class='hover createclassbutton'>Basic Information</td><td id='createclassbasicinformationok' class='notok'>OK</td></tr>";
+    html += "<tr><td id='createclasscstructure' class='hover createclassbutton'>Competence Structure</td><td id='createclasscstructureok' class='notok'>OK</td></tr>";
+    html += "<tr><td id='createclasstasks' class='hover createclassbutton'>Tasks</td><td id='createclasstasksok' class='notok'>OK</td></tr>";
+    html += "</table>";
     document.getElementById(id).innerHTML = html;
 
-    document.getElementById('buttonLogout').onclick = function () {
-        sessionInformation.logout();
+    var elements = document.getElementsByClassName('createclassbutton');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].onclick = function () {
+            setActiveButton(this, 'createclassbutton', 'createclassbuttonactive')
+            switch (this.id) {
+                case 'createclassbasicinformation':
+                    drawcreateclassbasicinformation('createclassright', sessionInformation);
+                    break;
+                case 'createclasscstructure':
+                    drawcreateclasscstructure('createclassright', sessionInformation);
+                    break;
+                case 'createclasstasks':
+                    drawcreateclasstask('createclassright', sessionInformation);
+                    break;
+            }
+        }
     }
+}
+
+function drawcreateclassbasicinformation(id, sessionInformation) {
+    var html = "<h1 class='center'>Basic Information</h1>";
+    html += "<p>Name: &nbsp; &nbsp; &nbsp; <input id='createclassname' size='81' value='" + sessionInformation.createclassentity.name + "'></p>";
+    html += "<p>Description:</p> <textarea rows='7' cols='70' id='createclassdescription'>" + sessionInformation.createclassentity.description + "</textarea >";
+    document.getElementById(id).innerHTML = html;
+
+    document.getElementById('createclassname').onchange = function () {
+        sessionInformation.createclassentity.name = this.value;
+        element = document.getElementById('createclassdescription');
+        if (this.value != "" && element.value != "")
+            document.getElementById('createclassbasicinformationok').className = 'ok';
+        else
+            document.getElementById('createclassbasicinformationok').className = 'notok';
+    }
+
+
+    document.getElementById('createclassdescription').onchange = function () {
+        sessionInformation.createclassentity.description = this.value;
+        element = document.getElementById('createclassname');
+        if (element.value != ""  && this.value != "")
+            document.getElementById('createclassbasicinformationok').className = 'ok';
+        else
+            document.getElementById('createclassbasicinformationok').className = 'notok';
+    }
+}
+
+function drawcreateclasscstructure(id, session) {
+    var html = "<h1 class='center'>Competence Structure</h1>";
+    //radio button -> create new one, use old one -> rest ausgrauen
+    html += "<input type='radio' name='gender' value='old' id='createclassexistingstructure' class='createclassusestructure hover margin'> Use existing StructureSUR";
+    //start dropdown
+    html += "&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp";
+    html += "<div id='dropdowntaskclasslinkage' class='dropdown center'>";
+    html += "<button onclick='dropdownFunction2()' class='dropbtn' id='buttondropdown2'>";
+    html += "&nbsp &nbsp &nbsp - &nbsp &nbsp &nbsp";
+    html += "</button>";
+    html += " <div id='myDropdown2' class='dropdown-content'>";
+    var cstructures = new Array();
+    html += "<a href='#' id='dropdownlinkagetaskclass-" + "&nbsp &nbsp &nbsp - &nbsp &nbsp &nbsp" + "' class='dropdowncstructure'>" + "&nbsp &nbsp &nbsp - &nbsp &nbsp &nbsp" + "</a>";
+    for (var i = 0; i < session.user.user.createdcstructures.length; i++) {
+        if (cstructures.indexOf(session.user.user.createdcstructures[i].name) == -1) {
+            cstructures.push(session.user.user.createdcstructures[i].name);
+        }
+    }
+
+    for (var i = 0; i < cstructures.length; i++) {
+        html += "<a href='#' id='dropdownlinkagetaskclass-" + cstructures[i] + "' class='dropdowncstructure'>" + cstructures[i] + " [YOURS]</a>";
+    }
+    var cstructures = new Array();
+    for (var i = 0; i < session.user.user.visiblecstructures.length; i++) {
+        if (cstructures.indexOf(session.user.user.visiblecstructures[i].name) == -1) {
+            cstructures.push(session.user.user.visiblecstructures[i].name);
+        }
+    }
+    for (var i = 0; i < cstructures.length; i++) {
+        html += "<a href='#' id='dropdownlinkagetaskclass-" + cstructures[i] + "' class='dropdowncstructure'>" + cstructures[i] + " [VISIBLE]</a>";
+    }
+    html += "</div></div></p>";
+    //end dropdown
+    html += "<br>";
+    html += "<input type='radio' name='gender' value='new' id='createclassnewstructure' class='createclassusestructure hover margin'> Create new Structure";
+    //eingabe daten
+
+    document.getElementById(id).innerHTML = html;
+}
+
+function drawcreateclasstask(id, sessionInformation) {
+    var html = "<h1 class='center'>Tasks</h1>";
+    document.getElementById(id).innerHTML = html;
 }
 
 //ADMIN

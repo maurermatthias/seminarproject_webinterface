@@ -126,7 +126,18 @@ body{
 .dropdown-content a:hover {background-color: lightgrey}
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
-
+#menuButtonDiv{
+    position: absolute;
+    bottom: 0;
+    width:100%;
+}
+.inline{
+    display:inline-block;
+    padding: 2px 50px;
+}
+.menuButtonActive{
+    background-color: lightgoldenrodyellow;
+}
 
 /*LOGIN*/
 
@@ -269,4 +280,33 @@ body{
 #divTeacherCstructureRight{
     height:100%;
     margin:10px;
+}
+
+
+/*Menu4*/
+#createclassleft{
+    margin: 100px 40px;
+}
+#createclassright{
+    margin: 80px; 10px;
+}
+#createclassleft td{
+    padding: 20px;
+    font-size: 150%;
+    border: solid;
+}
+.createclassbutton{
+
+}
+.createclassbuttonactive{
+    background-color: lightgrey;
+}
+.notok{
+    color:lightgrey;
+}
+.ok{
+    background-color: lightgreen;
+}
+.margin{
+    margin: 2px;
 }

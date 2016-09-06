@@ -983,3 +983,10 @@ function updateChange() {
         return xml;
     };
 }
+
+//Teacher classes ()
+
+function Createclassentity() {
+    this.name="";
+    this.description="";
+}
